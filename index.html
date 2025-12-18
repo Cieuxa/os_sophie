@@ -1,0 +1,2919 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nova Système OS v3.1</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ===== STYLE WINDOWS CLASSIQUE ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'MS Sans Serif', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #008080;
+            color: #000000;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+            font-size: 12px;
+        }
+
+        /* Bureau Windows 95/98 */
+        .desktop {
+            height: calc(100vh - 40px);
+            padding: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            align-content: flex-start;
+            gap: 20px;
+            position: relative;
+            background-color: #008080;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" opacity="0.1"><rect width="100" height="100" fill="%23000000"/><path d="M0,0 L100,100" stroke="%23C0C0C0" stroke-width="1"/><path d="M100,0 L0,100" stroke="%23C0C0C0" stroke-width="1"/></svg>');
+            overflow: hidden;
+        }
+
+        /* Icônes du bureau style Windows */
+        .desktop-icon {
+            width: 70px;
+            height: 70px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            cursor: pointer;
+            padding: 5px;
+            border: 1px dotted transparent;
+            position: relative;
+            user-select: none;
+        }
+
+        .desktop-icon:hover {
+            background-color: rgba(0, 0, 128, 0.2);
+            border: 1px dotted #000080;
+        }
+
+        .desktop-icon.selected {
+            background-color: rgba(0, 0, 128, 0.3);
+            border: 1px dashed #000080;
+        }
+
+        .desktop-icon i {
+            font-size: 32px;
+            margin-bottom: 5px;
+            color: #FFFFFF;
+            filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.5));
+        }
+
+        .desktop-icon span {
+            font-size: 11px;
+            color: #FFFFFF;
+            text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.7);
+            word-break: break-word;
+            text-align: center;
+            line-height: 1.1;
+        }
+
+        /* Barre des tâches Windows 95 */
+        .taskbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 40px;
+            background: linear-gradient(to bottom, #C0C0C0, #808080);
+            display: flex;
+            align-items: center;
+            padding: 0 3px;
+            border-top: 2px solid #FFFFFF;
+            z-index: 1000;
+            box-shadow: inset 1px 1px 0px #DFDFDF, inset -1px -1px 0px #808080;
+        }
+
+        .start-button {
+            height: 32px;
+            padding: 0 15px;
+            background: linear-gradient(to bottom, #C0C0C0, #808080);
+            border: 2px solid;
+            border-color: #FFFFFF #808080 #808080 #FFFFFF;
+            display: flex;
+            align-items: center;
+            font-weight: bold;
+            font-size: 12px;
+            cursor: pointer;
+            margin-right: 5px;
+            box-shadow: inset 1px 1px 0px #DFDFDF, inset -1px -1px 0px #808080;
+        }
+
+        .start-button:active {
+            border-color: #808080 #FFFFFF #FFFFFF #808080;
+            box-shadow: inset -1px -1px 0px #DFDFDF, inset 1px 1px 0px #808080;
+        }
+
+        .start-button img {
+            margin-right: 5px;
+            width: 16px;
+            height: 16px;
+        }
+
+        .taskbar-apps {
+            display: flex;
+            flex-grow: 1;
+            height: 100%;
+            align-items: center;
+        }
+
+        .taskbar-app {
+            height: 28px;
+            padding: 0 15px;
+            margin: 0 2px;
+            background: linear-gradient(to bottom, #C0C0C0, #808080);
+            border: 1px solid;
+            border-color: #FFFFFF #808080 #808080 #FFFFFF;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            font-size: 11px;
+            min-width: 120px;
+            box-shadow: inset 1px 1px 0px #DFDFDF, inset -1px -1px 0px #808080;
+        }
+
+        .taskbar-app.active {
+            border-color: #808080 #FFFFFF #FFFFFF #808080;
+            box-shadow: inset -1px -1px 0px #DFDFDF, inset 1px 1px 0px #808080;
+        }
+
+        .taskbar-app i {
+            margin-right: 6px;
+            font-size: 14px;
+        }
+
+        .system-tray {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            background: linear-gradient(to bottom, #C0C0C0, #808080);
+            border-left: 2px solid #808080;
+            border-right: 2px solid #FFFFFF;
+        }
+
+        .tray-icon {
+            margin: 0 3px;
+            font-size: 14px;
+            color: #000000;
+        }
+
+        .time-date {
+            padding: 0 8px;
+            font-size: 11px;
+            color: #000000;
+            border: 1px solid;
+            border-color: #808080 #FFFFFF #FFFFFF #808080;
+            background-color: #C0C0C0;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            margin-left: 5px;
+        }
+
+        /* Fenêtres style Windows 95 */
+        .window {
+            position: absolute;
+            background-color: #C0C0C0;
+            border: 2px solid;
+            border-color: #FFFFFF #808080 #808080 #FFFFFF;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+            display: none;
+            flex-direction: column;
+            min-width: 400px;
+            min-height: 300px;
+            z-index: 100;
+            resize: both;
+            overflow: hidden;
+        }
+
+        .window.active {
+            display: flex;
+        }
+
+        .window-header {
+            background: linear-gradient(to right, #000080, #1084D0);
+            padding: 3px 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #808080;
+            cursor: move;
+            user-select: none;
+            height: 25px;
+        }
+
+        .window-title {
+            display: flex;
+            align-items: center;
+            font-weight: bold;
+            color: #FFFFFF;
+            font-size: 12px;
+        }
+
+        .window-title i {
+            margin-right: 6px;
+            color: #FFFFFF;
+            font-size: 14px;
+        }
+
+        .window-controls {
+            display: flex;
+        }
+
+        .window-control {
+            width: 22px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            margin-left: 2px;
+            background: linear-gradient(to bottom, #C0C0C0, #808080);
+            border: 1px solid;
+            border-color: #FFFFFF #808080 #808080 #FFFFFF;
+            font-size: 10px;
+            font-weight: bold;
+            color: #000000;
+        }
+
+        .window-control:hover {
+            background: linear-gradient(to bottom, #FFFFFF, #C0C0C0);
+        }
+
+        .window-control:active {
+            border-color: #808080 #FFFFFF #FFFFFF #808080;
+        }
+
+        .window-control.close {
+            font-size: 12px;
+        }
+
+        .window-content {
+            flex-grow: 1;
+            padding: 5px;
+            overflow: auto;
+            background-color: #C0C0C0;
+            border: 1px solid;
+            border-color: #808080 #FFFFFF #FFFFFF #808080;
+            margin: 2px;
+        }
+
+        /* Menu Démarrer Windows */
+        .start-menu {
+            position: fixed;
+            bottom: 40px;
+            left: 3px;
+            width: 300px;
+            background-color: #C0C0C0;
+            border: 2px solid;
+            border-color: #FFFFFF #808080 #808080 #FFFFFF;
+            display: none;
+            flex-direction: column;
+            z-index: 1001;
+            box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .start-menu.active {
+            display: flex;
+        }
+
+        .start-menu-header {
+            padding: 10px;
+            background: linear-gradient(to right, #000080, #1084D0);
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+        }
+
+        .start-menu-header i {
+            margin-right: 8px;
+            font-size: 20px;
+        }
+
+        .start-menu-content {
+            display: flex;
+            padding: 5px 0;
+        }
+
+        .start-menu-programs {
+            width: 100%;
+            padding: 5px;
+        }
+
+        .start-menu-item {
+            padding: 5px 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+            border: 1px solid transparent;
+        }
+
+        .start-menu-item:hover {
+            background-color: #000080;
+            color: white;
+        }
+
+        .start-menu-item i {
+            margin-right: 8px;
+            width: 20px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .start-menu-divider {
+            height: 2px;
+            background: linear-gradient(to right, #808080, #C0C0C0, #808080);
+            margin: 5px 0;
+        }
+
+        /* Boutons Windows */
+        .windows-button {
+            padding: 4px 12px;
+            background: linear-gradient(to bottom, #C0C0C0, #808080);
+            border: 2px solid;
+            border-color: #FFFFFF #808080 #808080 #FFFFFF;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 22px;
+        }
+
+        .windows-button:active {
+            border-color: #808080 #FFFFFF #FFFFFF #808080;
+        }
+
+        .windows-button.primary {
+            background: linear-gradient(to bottom, #000080, #1084D0);
+            color: white;
+        }
+
+        /* Barres de défilement Windows */
+        .scrollbar {
+            background-color: #C0C0C0;
+            border: 1px solid;
+            border-color: #808080 #FFFFFF #FFFFFF #808080;
+        }
+
+        .scrollbar-thumb {
+            background: linear-gradient(to bottom, #C0C0C0, #808080);
+            border: 1px solid;
+            border-color: #FFFFFF #808080 #808080 #FFFFFF;
+        }
+
+        /* Champs de saisie Windows */
+        .windows-input {
+            padding: 3px 5px;
+            border: 2px solid;
+            border-color: #808080 #FFFFFF #FFFFFF #808080;
+            background-color: #FFFFFF;
+            font-size: 12px;
+        }
+
+        .windows-input:focus {
+            outline: none;
+            border-color: #000080;
+        }
+
+        /* Arrière-plan avec logo Nova Système */
+        .desktop-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #008080;
+            opacity: 0.9;
+            z-index: -1;
+        }
+
+        .nova-logo {
+            position: absolute;
+            bottom: 60px;
+            right: 20px;
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 48px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            font-family: 'Arial Black', sans-serif;
+        }
+
+        /* Contenu spécifique des applications */
+        .file-explorer {
+            display: flex;
+            height: 100%;
+        }
+
+        .sidebar {
+            width: 180px;
+            background-color: #C0C0C0;
+            padding: 10px 0;
+            border-right: 2px solid #808080;
+        }
+
+        .sidebar-item {
+            padding: 5px 10px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            font-size: 12px;
+            border: 1px solid transparent;
+        }
+
+        .sidebar-item:hover {
+            background-color: #000080;
+            color: white;
+        }
+
+        .sidebar-item.active {
+            background-color: #000080;
+            color: white;
+        }
+
+        .sidebar-item i {
+            margin-right: 8px;
+            font-size: 14px;
+        }
+
+        .explorer-content {
+            flex-grow: 1;
+            padding: 10px;
+            background-color: #FFFFFF;
+        }
+
+        .folder-view {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 15px;
+        }
+
+        .file-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px 5px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            text-align: center;
+        }
+
+        .file-item:hover {
+            background-color: #000080;
+            color: white;
+        }
+
+        .file-item i {
+            font-size: 32px;
+            margin-bottom: 5px;
+        }
+
+        .file-item.folder i {
+            color: #FFCC00;
+        }
+
+        .file-item.doc i {
+            color: #000080;
+        }
+
+        .file-item.pdf i {
+            color: #FF0000;
+        }
+
+        .file-item.img i {
+            color: #00AA00;
+        }
+
+        /* Terminal MS-DOS style */
+        .terminal-content {
+            background-color: #000000;
+            color: #C0C0C0;
+            font-family: 'Courier New', monospace;
+            height: 100%;
+            padding: 10px;
+            overflow: auto;
+            white-space: pre-wrap;
+            font-size: 14px;
+        }
+
+        .terminal-prompt {
+            color: #00FF00;
+        }
+
+        /* Notepad style */
+        .notepad-content {
+            width: 100%;
+            height: 100%;
+            background-color: #FFFFFF;
+            color: #000000;
+            border: 1px solid #808080;
+            outline: none;
+            resize: none;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            padding: 5px;
+        }
+
+        /* Browser style */
+        .browser-url-bar {
+            display: flex;
+            padding: 5px;
+            background-color: #C0C0C0;
+            border-bottom: 2px solid #808080;
+            margin-bottom: 10px;
+        }
+
+        .browser-url-input {
+            flex-grow: 1;
+            padding: 3px 5px;
+            border: 2px solid;
+            border-color: #808080 #FFFFFF #FFFFFF #808080;
+            margin-right: 5px;
+            font-size: 12px;
+        }
+
+        .browser-content {
+            width: 100%;
+            height: calc(100% - 40px);
+            background-color: #FFFFFF;
+            color: #000000;
+            padding: 10px;
+            overflow: auto;
+        }
+
+        /* Mail app */
+        .mail-item {
+            padding: 8px;
+            border-bottom: 1px solid #808080;
+            cursor: pointer;
+        }
+
+        .mail-item:hover {
+            background-color: #000080;
+            color: white;
+        }
+
+        .mail-item.unread {
+            font-weight: bold;
+        }
+
+        /* Settings */
+        .settings-panel {
+            display: flex;
+            height: 100%;
+        }
+
+        .settings-sidebar {
+            width: 150px;
+            background-color: #C0C0C0;
+            padding: 10px 0;
+            border-right: 2px solid #808080;
+        }
+
+        .settings-content {
+            flex-grow: 1;
+            padding: 15px;
+            background-color: #FFFFFF;
+        }
+
+        /* Système de fichiers */
+        .file-info {
+            background-color: #FFFFFF;
+            border: 1px solid #808080;
+            padding: 10px;
+            margin-top: 10px;
+        }
+
+        /* Notification Windows */
+        .notification {
+            position: fixed;
+            top: 50px;
+            right: 20px;
+            width: 300px;
+            background-color: #C0C0C0;
+            border: 2px solid;
+            border-color: #FFFFFF #808080 #808080 #FFFFFF;
+            padding: 10px;
+            display: none;
+            z-index: 1002;
+            box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .notification.active {
+            display: block;
+        }
+
+        .notification-header {
+            background: linear-gradient(to right, #000080, #1084D0);
+            color: white;
+            padding: 5px;
+            font-weight: bold;
+            margin: -10px -10px 10px -10px;
+        }
+
+        /* Barre d'état */
+        .status-bar {
+            height: 20px;
+            background: linear-gradient(to bottom, #C0C0C0, #808080);
+            border-top: 2px solid #FFFFFF;
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            font-size: 11px;
+            color: #000000;
+        }
+
+        /* Pour le redimensionnement */
+        .window-resize-handle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            bottom: 0;
+            right: 0;
+            cursor: nwse-resize;
+            background: linear-gradient(135deg, #C0C0C0, #808080);
+            border: 1px solid;
+            border-color: #FFFFFF #808080 #808080 #FFFFFF;
+        }
+
+        /* Animation d'ouverture de fenêtre */
+        @keyframes windowOpen {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .window.active {
+            animation: windowOpen 0.2s ease-out;
+        }
+
+        /* Icône Windows dans le bouton Démarrer */
+        .windows-flag {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            background: linear-gradient(135deg,
+                    #000080 0%, #000080 50%,
+                    #1084D0 50%, #1084D0 100%);
+            margin-right: 5px;
+            position: relative;
+        }
+
+        .windows-flag:after {
+            content: "N";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ===== EFFETS GLITCH ET WEBCAM ===== */
+        .glitch-active {
+            animation: glitch-anim 0.05s infinite;
+            filter: contrast(150%) brightness(120%) hue-rotate(10deg);
+        }
+
+        @keyframes glitch-anim {
+            0% {
+                transform: translate(0);
+            }
+
+            20% {
+                transform: translate(-2px, 2px);
+            }
+
+            40% {
+                transform: translate(-2px, -2px);
+            }
+
+            60% {
+                transform: translate(2px, 2px);
+            }
+
+            80% {
+                transform: translate(2px, -2px);
+            }
+
+            100% {
+                transform: translate(0);
+            }
+        }
+
+        #glitchCamWindow {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            max-width: 600px;
+            height: 400px;
+            background: #000;
+            border: 4px solid #808080;
+            z-index: 99999;
+            display: none;
+            overflow: hidden;
+        }
+
+        #glitchVideo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: grayscale(1) sepia(0.2) contrast(1.5);
+        }
+
+        .crt-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.05), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.05));
+            background-size: 100% 3px, 3px 100%;
+            pointer-events: none;
+        }
+
+        .cam-ui {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 20px;
+            color: #00ff00;
+            font-family: 'Courier New', Courier, monospace;
+            pointer-events: none;
+            text-transform: uppercase;
+        }
+
+        .cam-rec {
+            color: #ff0000;
+            animation: blink 0.5s infinite;
+            font-weight: bold;
+        }
+
+        @keyframes blink {
+            50% {
+                opacity: 0;
+            }
+        }
+
+        #staticNoise {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyBAMAAADsEZWCAAAAElBMVEUAAAD8/Pz09PT4+Pj////////766daAAAABXRSTlMAM8zMzMwwM5MAAAAzSURBVDjLY2AYBcMgGAWDFwwmAAAGSgABBv3S4AAAAABJRU5ErkJggg==');
+            opacity: 0.2;
+            pointer-events: none;
+            z-index: 100000;
+            display: none;
+            animation: noise-anim 0.2s infinite;
+        }
+
+        @keyframes noise-anim {
+            0% {
+                transform: translate(0, 0);
+            }
+
+            10% {
+                transform: translate(-5%, -5%);
+            }
+
+            20% {
+                transform: translate(-10%, 5%);
+            }
+
+            30% {
+                transform: translate(5%, -10%);
+            }
+
+            40% {
+                transform: translate(-5%, 15%);
+            }
+
+            50% {
+                transform: translate(-10%, 5%);
+            }
+
+            60% {
+                transform: translate(15%, 0);
+            }
+
+            70% {
+                transform: translate(0, 10%);
+            }
+
+            80% {
+                transform: translate(-15%, 0);
+            }
+
+            90% {
+                transform: translate(10%, 5%);
+            }
+
+            100% {
+                transform: translate(5%, 0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Bureau -->
+    <div class="desktop">
+        <div class="desktop-background"></div>
+        <div class="nova-logo">NOVA SYSTÈME</div>
+
+        <!-- Icônes du bureau -->
+        <div class="desktop-icon" onclick="openWindow('explorer')">
+            <i class="fas fa-folder"></i>
+            <span>Poste de travail</span>
+        </div>
+
+        <div class="desktop-icon" onclick="openWindow('novaNetwork')">
+            <i class="fas fa-network-wired"></i>
+            <span>Réseau Nova</span>
+        </div>
+
+        <div class="desktop-icon" onclick="openWindow('documents')">
+            <i class="fas fa-folder-open"></i>
+            <span>Mes documents</span>
+        </div>
+
+        <div class="desktop-icon" onclick="openWindow('mail')">
+            <i class="fas fa-envelope"></i>
+            <span>Messagerie Nova</span>
+        </div>
+
+        <div class="desktop-icon" onclick="openWindow('browser')">
+            <i class="fas fa-globe"></i>
+            <span>Nova Navigator</span>
+        </div>
+
+        <div class="desktop-icon" onclick="openWindow('notepad')">
+            <i class="fas fa-edit"></i>
+            <span>Bloc-notes</span>
+        </div>
+
+        <div class="desktop-icon" onclick="openWindow('terminal')">
+            <i class="fas fa-terminal"></i>
+            <span>Console Nova</span>
+        </div>
+
+        <div class="desktop-icon" onclick="openWindow('settings')">
+            <i class="fas fa-cog"></i>
+            <span>Configuration</span>
+        </div>
+
+        <div class="desktop-icon" onclick="openWindow('novaAdmin')">
+            <i class="fas fa-user-shield"></i>
+            <span>Admin Nova</span>
+        </div>
+
+        <div class="desktop-icon" onclick="openWindow('novaSecur')">
+            <i class="fas fa-shield-alt"></i>
+            <span>Sécurité</span>
+        </div>
+
+        <div class="desktop-icon" onclick="openWindow('corbeille')">
+            <i class="fas fa-trash-alt"></i>
+            <span>Corbeille</span>
+        </div>
+
+        <div class="desktop-icon" onclick="openWindow('snake')">
+            <i class="fas fa-gamepad"></i>
+            <span>Snake</span>
+        </div>
+    </div>
+
+    <!-- Barre des tâches -->
+    <div class="taskbar">
+        <div class="start-button" onclick="toggleStartMenu()">
+            <div class="windows-flag"></div>
+            Démarrer
+        </div>
+
+        <div class="taskbar-apps" id="taskbarApps">
+            <!-- Applications dans la barre des tâches seront ajoutées dynamiquement -->
+        </div>
+
+        <div class="system-tray">
+            <div class="tray-icon">
+                <i class="fas fa-volume-up"></i>
+            </div>
+            <div class="tray-icon">
+                <i class="fas fa-network-wired"></i>
+            </div>
+            <div class="tray-icon">
+                <i class="fas fa-clock"></i>
+            </div>
+            <div class="time-date" id="timeDate">
+                14:30
+            </div>
+        </div>
+    </div>
+
+    <!-- Menu Démarrer -->
+    <div class="start-menu" id="startMenu">
+        <div class="start-menu-header">
+            <i class="fas fa-user"></i>
+            NOVA SYSTÈME OS v3.1
+        </div>
+        <div class="start-menu-content">
+            <div class="start-menu-programs">
+                <div class="start-menu-item" onclick="openWindow('explorer')">
+                    <i class="fas fa-folder"></i> Poste de travail
+                </div>
+                <div class="start-menu-item" onclick="openWindow('documents')">
+                    <i class="fas fa-folder-open"></i> Documents
+                </div>
+                <div class="start-menu-item" onclick="openWindow('novaNetwork')">
+                    <i class="fas fa-network-wired"></i> Réseau d'entreprise
+                </div>
+                <div class="start-menu-item" onclick="openWindow('mail')">
+                    <i class="fas fa-envelope"></i> Messagerie Nova
+                </div>
+                <div class="start-menu-divider"></div>
+                <div class="start-menu-item" onclick="openWindow('settings')">
+                    <i class="fas fa-cog"></i> Panneau de configuration
+                </div>
+                <div class="start-menu-item" onclick="openWindow('novaAdmin')">
+                    <i class="fas fa-user-shield"></i> Administration
+                </div>
+                <div class="start-menu-item" onclick="openWindow('novaSecur')">
+                    <i class="fas fa-shield-alt"></i> Centre de sécurité
+                </div>
+                <div class="start-menu-divider"></div>
+                <div class="start-menu-item" onclick="openWindow('terminal')">
+                    <i class="fas fa-terminal"></i> Console système
+                </div>
+                <div class="start-menu-item" onclick="openWindow('browser')">
+                    <i class="fas fa-globe"></i> Navigateur Nova
+                </div>
+                <div class="start-menu-item" onclick="openWindow('notepad')">
+                    <i class="fas fa-edit"></i> Bloc-notes
+                </div>
+                <div class="start-menu-divider"></div>
+                <div class="start-menu-item" onclick="novaShutdown()">
+                    <i class="fas fa-power-off"></i> Arrêter le système
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fenêtre: Poste de travail -->
+    <div class="window" id="explorerWindow" style="top: 50px; left: 100px; width: 600px; height: 400px;">
+        <div class="window-header">
+            <div class="window-title">
+                <i class="fas fa-folder"></i>
+                Poste de travail - NOVA SYSTÈME
+            </div>
+            <div class="window-controls">
+                <div class="window-control minimize" onclick="minimizeWindow('explorer')">_</div>
+                <div class="window-control maximize" onclick="maximizeWindow('explorer')">□</div>
+                <div class="window-control close" onclick="closeWindow('explorer')">×</div>
+            </div>
+        </div>
+        <div class="window-content">
+            <div class="file-explorer">
+                <div class="sidebar">
+                    <div class="sidebar-item active" onclick="selectSidebarItem(this, 'desktop')">
+                        <i class="fas fa-desktop"></i> Bureau
+                    </div>
+                    <div class="sidebar-item" onclick="selectSidebarItem(this, 'documents')">
+                        <i class="fas fa-folder"></i> Mes documents
+                    </div>
+                    <div class="sidebar-item" onclick="selectSidebarItem(this, 'driveC')">
+                        <i class="fas fa-hdd"></i> Disque local (C:)
+                    </div>
+                    <div class="sidebar-item" onclick="selectSidebarItem(this, 'network')">
+                        <i class="fas fa-network-wired"></i> Réseau Nova
+                    </div>
+                    <div class="sidebar-item" onclick="selectSidebarItem(this, 'printers')">
+                        <i class="fas fa-print"></i> Imprimantes
+                    </div>
+                    <div class="sidebar-item" onclick="selectSidebarItem(this, 'settings')">
+                        <i class="fas fa-cog"></i> Panneau de config
+                    </div>
+                </div>
+                <div class="explorer-content">
+                    <div style="margin-bottom: 10px;">
+                        <button class="windows-button" onclick="createNewFolder()">
+                            <i class="fas fa-folder-plus"></i> Nouveau dossier
+                        </button>
+                        <button class="windows-button" style="margin-left: 5px;" onclick="uploadFile()">
+                            <i class="fas fa-upload"></i> Importer
+                        </button>
+                    </div>
+
+                    <div class="folder-view" id="folderContent">
+                        <div class="file-item folder" onclick="openFolder('system')">
+                            <i class="fas fa-folder"></i>
+                            <span>Système</span>
+                        </div>
+                        <div class="file-item folder" onclick="openFolder('applications')">
+                            <i class="fas fa-folder"></i>
+                            <span>Applications</span>
+                        </div>
+                        <div class="file-item folder" onclick="openFolder('users')">
+                            <i class="fas fa-folder"></i>
+                            <span>Utilisateurs</span>
+                        </div>
+                        <div class="file-item folder" onclick="openFolder('nova_data')">
+                            <i class="fas fa-folder"></i>
+                            <span>Données Nova</span>
+                        </div>
+                        <div class="file-item folder" onclick="openFolder('backup')">
+                            <i class="fas fa-folder"></i>
+                            <span>Sauvegarde</span>
+                        </div>
+                        <div class="file-item folder" onclick="openFolder('logs')">
+                            <i class="fas fa-folder"></i>
+                            <span>Journaux système</span>
+                        </div>
+                        <div class="file-item doc" onclick="openFile('readme.txt')">
+                            <i class="fas fa-file-alt"></i>
+                            <span>LISEZMOI.TXT</span>
+                        </div>
+                        <div class="file-item doc" onclick="openFile('nova_manual.pdf')">
+                            <i class="fas fa-file-pdf"></i>
+                            <span>MANUEL.PDF</span>
+                        </div>
+                    </div>
+
+                    <div class="file-info" id="fileInfo" style="display: none;">
+                        <div><strong>Fichier sélectionné:</strong> <span id="fileName">-</span></div>
+                        <div><strong>Taille:</strong> <span id="fileSize">-</span></div>
+                        <div><strong>Type:</strong> <span id="fileType">-</span></div>
+                        <div><strong>Modifié:</strong> <span id="fileModified">-</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="window-resize-handle"></div>
+        <div class="status-bar">
+            <span id="statusText">Prêt</span>
+            <span style="margin-left: auto;">5 objets</span>
+        </div>
+    </div>
+
+    <!-- Fenêtre: Console Nova -->
+    <div class="window" id="terminalWindow" style="top: 100px; left: 300px; width: 500px; height: 350px;">
+        <div class="window-header">
+            <div class="window-title">
+                <i class="fas fa-terminal"></i>
+                Console Nova Système v3.1
+            </div>
+            <div class="window-controls">
+                <div class="window-control minimize" onclick="minimizeWindow('terminal')">_</div>
+                <div class="window-control maximize" onclick="maximizeWindow('terminal')">□</div>
+                <div class="window-control close" onclick="closeWindow('terminal')">×</div>
+            </div>
+        </div>
+        <div class="window-content">
+            <div class="terminal-content" id="terminalContent">
+                <div class="terminal-line">
+                    <span class="terminal-prompt">C:\NOVA></span> Bienvenue sur Nova Système OS v3.1
+                </div>
+                <div class="terminal-line">
+                    <span class="terminal-prompt">C:\NOVA></span> Système initialisé - 15/05/2024 14:30:15
+                </div>
+                <div class="terminal-line">
+                    <span class="terminal-prompt">C:\NOVA></span> Chargement des modules sécurité...
+                </div>
+                <div class="terminal-line">
+                    <span class="terminal-prompt">C:\NOVA></span> [OK] Module anti-intrusion chargé
+                </div>
+                <div class="terminal-line">
+                    <span class="terminal-prompt">C:\NOVA></span> [OK] Surveillance réseau active
+                </div>
+                <div class="terminal-line">
+                    <span class="terminal-prompt">C:\NOVA></span> [OK] Base de données utilisateurs
+                </div>
+                <div class="terminal-line">
+                    <span class="terminal-prompt">C:\NOVA></span>
+                </div>
+                <div class="terminal-line">
+                    <span class="terminal-prompt">C:\NOVA></span> Tapez 'help' pour la liste des commandes
+                </div>
+                <div class="terminal-line">
+                    <span class="terminal-prompt">C:\NOVA></span> <span id="cursor">_</span>
+                </div>
+            </div>
+        </div>
+        <div class="status-bar">
+            <span>Console Nova | Mode: Sécurisé</span>
+        </div>
+    </div>
+
+    <!-- Fenêtre: Messagerie Nova -->
+    <div class="window" id="mailWindow" style="top: 150px; left: 200px; width: 550px; height: 450px;">
+        <div class="window-header">
+            <div class="window-title">
+                <i class="fas fa-envelope"></i>
+                Messagerie Nova - Boîte de réception
+            </div>
+            <div class="window-controls">
+                <div class="window-control minimize" onclick="minimizeWindow('mail')">_</div>
+                <div class="window-control maximize" onclick="maximizeWindow('mail')">□</div>
+                <div class="window-control close" onclick="closeWindow('mail')">×</div>
+            </div>
+        </div>
+        <div class="window-content">
+            <div style="display: flex; height: 100%;">
+                <div style="width: 150px; background-color: #C0C0C0; padding: 10px 0; border-right: 2px solid #808080;">
+                    <button class="windows-button" style="width: 100%; margin-bottom: 10px;" onclick="composeEmail()">
+                        <i class="fas fa-edit"></i> Nouveau
+                    </button>
+                    <div class="sidebar-item active" onclick="selectMailFolder(this, 'inbox')">
+                        <i class="fas fa-inbox"></i> Boîte de réception (3)
+                    </div>
+                    <div class="sidebar-item" onclick="selectMailFolder(this, 'sent')">
+                        <i class="fas fa-paper-plane"></i> Envoyés
+                    </div>
+                    <div class="sidebar-item" onclick="selectMailFolder(this, 'drafts')">
+                        <i class="fas fa-file"></i> Brouillons
+                    </div>
+                    <div class="sidebar-item" onclick="selectMailFolder(this, 'trash')">
+                        <i class="fas fa-trash-alt"></i> Corbeille
+                    </div>
+                </div>
+                <div style="flex-grow: 1; display: flex; flex-direction: column; background-color: #FFFFFF;">
+                    <div style="padding: 5px; border-bottom: 1px solid #C0C0C0; display: flex; align-items: center;">
+                        <input type="text" class="windows-input" placeholder="Rechercher..."
+                            style="width: 150px; margin-right: 5px;" id="mailSearch">
+                        <button class="windows-button" onclick="searchMail()"><i class="fas fa-search"></i></button>
+                    </div>
+
+                    <div id="mailList"
+                        style="flex: 1; overflow-y: auto; border-bottom: 1px solid #808080; height: 150px; min-height: 150px;">
+                        <!-- Les emails seront chargés dynamiquement -->
+                    </div>
+
+                    <div id="mailPreview"
+                        style="flex: 1.5; overflow-y: auto; padding: 15px; background-color: #F8F9FA;">
+                        <div style="color: #888; text-align: center; margin-top: 50px;">
+                            <i class="fas fa-envelope-open" style="font-size: 24px; margin-bottom: 10px;"></i><br>
+                            Sélectionnez un message pour le lire
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="status-bar">
+            <span id="mailStatus">3 messages, 2 non lus</span>
+        </div>
+    </div>
+
+    <!-- Fenêtre: Bloc-notes -->
+    <div class="window" id="notepadWindow" style="top: 200px; left: 400px; width: 450px; height: 350px;">
+        <div class="window-header">
+            <div class="window-title">
+                <i class="fas fa-edit"></i>
+                Bloc-notes - NOVA_SYSTÈME.txt
+            </div>
+            <div class="window-controls">
+                <div class="window-control minimize" onclick="minimizeWindow('notepad')">_</div>
+                <div class="window-control maximize" onclick="maximizeWindow('notepad')">□</div>
+                <div class="window-control close" onclick="closeWindow('notepad')">×</div>
+            </div>
+        </div>
+        <div class="window-content">
+            <textarea class="notepad-content" id="notepadContent">
+NOVA SYSTÈME - NOTES INTERNES
+Date: 15/05/2024
+Utilisateur: ADMIN
+Système: NOVA OS v3.1
+
+[À FAIRE]
+- Vérifier les logs de sécurité
+- Mettre à jour les bases de signatures antivirus
+- Préparer le rapport mensuel
+- Sauvegarder la base de données utilisateurs
+
+[NOTES]
+- Maintenance système prévue vendredi 20h-22h
+- Nouveau module de surveillance à installer
+- Formation sécurité le 20/05
+
+[CONTACTS URGENTS]
+- Service Informatique: poste 1234
+- Support Nova: poste 5678
+- Admin Réseau: poste 9012
+
+© 2024 Nova Système - Tous droits réservés
+            </textarea>
+        </div>
+        <div class="status-bar">
+            <span>Ligne 1, Colonne 1 | INS</span>
+        </div>
+    </div>
+
+    <!-- Fenêtre: Navigateur Nova -->
+    <div class="window" id="browserWindow" style="top: 80px; left: 250px; width: 700px; height: 500px;">
+        <div class="window-header">
+            <div class="window-title">
+                <i class="fas fa-globe"></i>
+                Nova Navigator - Portail d'entreprise
+            </div>
+            <div class="window-controls">
+                <div class="window-control minimize" onclick="minimizeWindow('browser')">_</div>
+                <div class="window-control maximize" onclick="maximizeWindow('browser')">□</div>
+                <div class="window-control close" onclick="closeWindow('browser')">×</div>
+            </div>
+        </div>
+        <div class="window-content">
+            <div class="browser-url-bar">
+                <button class="windows-button" onclick="browserBack()">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <button class="windows-button" style="margin: 0 5px;" onclick="browserForward()">
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+                <button class="windows-button" onclick="browserRefresh()">
+                    <i class="fas fa-redo"></i>
+                </button>
+                <input type="text" class="browser-url-input" value="http://intranet.novasysteme.local/" id="browserUrl">
+                <button class="windows-button" onclick="navigateBrowser()">
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+            <div class="browser-content" id="browserContent">
+                <div style="background-color: #000080; color: white; padding: 10px; margin: -10px -10px 10px -10px;">
+                    <h2 style="margin: 0;">NOVA SYSTÈME - Portail Intranet</h2>
+                </div>
+
+                <h3>Bienvenue sur le réseau Nova</h3>
+                <p>Système: <strong>NOVA OS v3.1</strong></p>
+                <p>Utilisateur connecté: <strong>ADMIN</strong></p>
+                <p>Dernière connexion: 15/05/2024 14:25</p>
+
+                <div style="margin: 20px 0; border-top: 2px solid #808080; padding-top: 10px;">
+                    <h4>Accès rapide:</h4>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px;">
+                        <button class="windows-button" onclick="navigateTo('services')">
+                            <i class="fas fa-cogs"></i> Services
+                        </button>
+                        <button class="windows-button" onclick="navigateTo('database')">
+                            <i class="fas fa-database"></i> Base de données
+                        </button>
+                        <button class="windows-button" onclick="navigateTo('security')">
+                            <i class="fas fa-shield-alt"></i> Sécurité
+                        </button>
+                        <button class="windows-button" onclick="navigateTo('reports')">
+                            <i class="fas fa-chart-bar"></i> Rapports
+                        </button>
+                        <button class="windows-button" onclick="navigateTo('users')">
+                            <i class="fas fa-users"></i> Utilisateurs
+                        </button>
+                        <button class="windows-button" onclick="navigateTo('backup')">
+                            <i class="fas fa-save"></i> Sauvegarde
+                        </button>
+                    </div>
+                </div>
+
+                <div style="border: 1px solid #808080; padding: 10px; margin-top: 20px;">
+                    <h4>Alertes système:</h4>
+                    <ul style="margin: 10px 0; padding-left: 20px;">
+                        <li>[INFO] Tous les systèmes opérationnels</li>
+                        <li>[WARN] Sauvegarde planifiée ce soir à 22h</li>
+                        <li>[INFO] 5 utilisateurs connectés</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="status-bar">
+            <span>http://intranet.novasysteme.local/</span>
+        </div>
+    </div>
+
+    <!-- Fenêtre: Administration Nova -->
+    <div class="window" id="novaAdminWindow" style="top: 120px; left: 350px; width: 600px; height: 450px;">
+        <div class="window-header">
+            <div class="window-title">
+                <i class="fas fa-user-shield"></i>
+                Administration Nova Système
+            </div>
+            <div class="window-controls">
+                <div class="window-control minimize" onclick="minimizeWindow('novaAdmin')">_</div>
+                <div class="window-control maximize" onclick="maximizeWindow('novaAdmin')">□</div>
+                <div class="window-control close" onclick="closeWindow('novaAdmin')">×</div>
+            </div>
+        </div>
+        <div class="window-content">
+            <div class="settings-panel">
+                <div class="settings-sidebar">
+                    <div class="sidebar-item active" onclick="selectAdminTab(this, 'users')">
+                        <i class="fas fa-users"></i> Utilisateurs
+                    </div>
+                    <div class="sidebar-item" onclick="selectAdminTab(this, 'servers')">
+                        <i class="fas fa-server"></i> Serveurs
+                    </div>
+                    <div class="sidebar-item" onclick="selectAdminTab(this, 'database')">
+                        <i class="fas fa-database"></i> Bases de données
+                    </div>
+                    <div class="sidebar-item" onclick="selectAdminTab(this, 'network')">
+                        <i class="fas fa-network-wired"></i> Réseau
+                    </div>
+                    <div class="sidebar-item" onclick="selectAdminTab(this, 'security')">
+                        <i class="fas fa-shield-alt"></i> Sécurité
+                    </div>
+                    <div class="sidebar-item" onclick="selectAdminTab(this, 'services')">
+                        <i class="fas fa-tasks"></i> Services
+                    </div>
+                </div>
+                <div class="settings-content" id="adminContent">
+                    <h3>Gestion des utilisateurs</h3>
+                    <div style="margin: 15px 0;">
+                        <button class="windows-button" onclick="createNewUser()">
+                            <i class="fas fa-user-plus"></i> Nouvel utilisateur
+                        </button>
+                        <button class="windows-button" style="margin-left: 5px;" onclick="editUser()">
+                            <i class="fas fa-user-edit"></i> Modifier
+                        </button>
+                        <button class="windows-button" style="margin-left: 5px;" onclick="deleteUser()">
+                            <i class="fas fa-user-times"></i> Supprimer
+                        </button>
+                    </div>
+
+                    <div style="border: 1px solid #808080; padding: 5px; background-color: #FFFFFF;">
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <thead>
+                                <tr style="background-color: #000080; color: white;">
+                                    <th style="padding: 5px; text-align: left;">Nom</th>
+                                    <th style="padding: 5px; text-align: left;">Département</th>
+                                    <th style="padding: 5px; text-align: left;">Dernière connexion</th>
+                                    <th style="padding: 5px; text-align: left;">Statut</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="padding: 5px; border-bottom: 1px solid #C0C0C0;">ADMIN</td>
+                                    <td style="padding: 5px; border-bottom: 1px solid #C0C0C0;">Système</td>
+                                    <td style="padding: 5px; border-bottom: 1px solid #C0C0C0;">15/05 14:25</td>
+                                    <td style="padding: 5px; border-bottom: 1px solid #C0C0C0; color: green;">● Actif
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 5px; border-bottom: 1px solid #C0C0C0;">USER01</td>
+                                    <td style="padding: 5px; border-bottom: 1px solid #C0C0C0;">Informatique</td>
+                                    <td style="padding: 5px; border-bottom: 1px solid #C0C0C0;">15/05 13:45</td>
+                                    <td style="padding: 5px; border-bottom: 1px solid #C0C0C0; color: green;">● Actif
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 5px; border-bottom: 1px solid #C0C0C0;">USER02</td>
+                                    <td style="padding: 5px; border-bottom: 1px solid #C0C0C0;">Comptabilité</td>
+                                    <td style="padding: 5px; border-bottom: 1px solid #C0C0C0;">15/05 11:30</td>
+                                    <td style="padding: 5px; border-bottom: 1px solid #C0C0C0; color: orange;">● Inactif
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 5px;">USER03</td>
+                                    <td style="padding: 5px;">Direction</td>
+                                    <td style="padding: 5px;">14/05 16:20</td>
+                                    <td style="padding: 5px; color: green;">● Actif</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div style="margin-top: 20px; padding: 10px; background-color: #FFF8DC; border: 1px solid #FFD700;">
+                        <strong><i class="fas fa-info-circle"></i> Information:</strong> 4 utilisateurs actifs sur le
+                        système Nova.
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="status-bar">
+            <span>Système Nova - Mode Administration</span>
+        </div>
+    </div>
+
+    <!-- Fenêtre: Configuration -->
+    <div class="window" id="settingsWindow" style="top: 180px; left: 500px; width: 500px; height: 400px;">
+        <div class="window-header">
+            <div class="window-title">
+                <i class="fas fa-cog"></i>
+                Configuration Nova Système
+            </div>
+            <div class="window-controls">
+                <div class="window-control minimize" onclick="minimizeWindow('settings')">_</div>
+                <div class="window-control maximize" onclick="maximizeWindow('settings')">□</div>
+                <div class="window-control close" onclick="closeWindow('settings')">×</div>
+            </div>
+        </div>
+        <div class="window-content">
+            <div class="settings-panel">
+                <div class="settings-sidebar">
+                    <div class="sidebar-item active" onclick="selectSettingsTab(this, 'system')">
+                        <i class="fas fa-desktop"></i> Système
+                    </div>
+                    <div class="sidebar-item" onclick="selectSettingsTab(this, 'display')">
+                        <i class="fas fa-desktop"></i> Affichage
+                    </div>
+                    <div class="sidebar-item" onclick="selectSettingsTab(this, 'network')">
+                        <i class="fas fa-network-wired"></i> Réseau
+                    </div>
+                    <div class="sidebar-item" onclick="selectSettingsTab(this, 'security')">
+                        <i class="fas fa-shield-alt"></i> Sécurité
+                    </div>
+                    <div class="sidebar-item" onclick="selectSettingsTab(this, 'apps')">
+                        <i class="fas fa-th"></i> Applications
+                    </div>
+                </div>
+                <div class="settings-content" id="settingsContent">
+                    <h3>Paramètres système</h3>
+                    <div style="margin: 15px 0;">
+                        <div style="margin-bottom: 10px;">
+                            <label style="display: block; margin-bottom: 5px;">Nom du système:</label>
+                            <input type="text" class="windows-input" value="NOVA-SYSTEME-01" style="width: 200px;">
+                        </div>
+                        <div style="margin-bottom: 10px;">
+                            <label style="display: block; margin-bottom: 5px;">Fuseau horaire:</label>
+                            <select class="windows-input" style="width: 200px;">
+                                <option>Europe/Paris</option>
+                                <option>UTC</option>
+                                <option>America/New_York</option>
+                            </select>
+                        </div>
+                        <div style="margin-bottom: 10px;">
+                            <label style="display: block; margin-bottom: 5px;">
+                                <input type="checkbox"> Mises à jour automatiques
+                            </label>
+                        </div>
+                        <button class="windows-button primary" onclick="saveSettings()">
+                            <i class="fas fa-save"></i> Enregistrer
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="status-bar">
+            <span>Configuration système</span>
+        </div>
+    </div>
+
+    <!-- Fenêtre: Sécurité Nova -->
+    <div class="window" id="novaSecurWindow" style="top: 220px; left: 450px; width: 550px; height: 420px;">
+        <div class="window-header">
+            <div class="window-title">
+                <i class="fas fa-shield-alt"></i>
+                Centre de sécurité Nova
+            </div>
+            <div class="window-controls">
+                <div class="window-control minimize" onclick="minimizeWindow('novaSecur')">_</div>
+                <div class="window-control maximize" onclick="maximizeWindow('novaSecur')">□</div>
+                <div class="window-control close" onclick="closeWindow('novaSecur')">×</div>
+            </div>
+        </div>
+        <div class="window-content">
+            <div class="settings-panel">
+                <div class="settings-sidebar">
+                    <div class="sidebar-item active" onclick="selectSecurityTab(this, 'overview')">
+                        <i class="fas fa-home"></i> Vue d'ensemble
+                    </div>
+                    <div class="sidebar-item" onclick="selectSecurityTab(this, 'firewall')">
+                        <i class="fas fa-fire"></i> Pare-feu
+                    </div>
+                    <div class="sidebar-item" onclick="selectSecurityTab(this, 'antivirus')">
+                        <i class="fas fa-shield-virus"></i> Antivirus
+                    </div>
+                    <div class="sidebar-item" onclick="selectSecurityTab(this, 'logs')">
+                        <i class="fas fa-clipboard-list"></i> Journaux
+                    </div>
+                    <div class="sidebar-item" onclick="selectSecurityTab(this, 'alerts')">
+                        <i class="fas fa-bell"></i> Alertes
+                    </div>
+                </div>
+                <div class="settings-content" id="securityContent">
+                    <h3>État de la sécurité</h3>
+                    <div style="margin: 15px 0; padding: 15px; background-color: #DFF0D8; border: 1px solid #D6E9C6;">
+                        <h4 style="margin-top: 0; color: #3C763D;">
+                            <i class="fas fa-check-circle"></i> Système sécurisé
+                        </h4>
+                        <p>Tous les composants de sécurité sont actifs et à jour.</p>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 20px;">
+                        <div style="border: 1px solid #808080; padding: 10px;">
+                            <h5><i class="fas fa-fire"></i> Pare-feu</h5>
+                            <p>Statut: <span style="color: green;">Actif</span></p>
+                            <button class="windows-button" style="margin-top: 5px;">Configurer</button>
+                        </div>
+                        <div style="border: 1px solid #808080; padding: 10px;">
+                            <h5><i class="fas fa-shield-virus"></i> Antivirus</h5>
+                            <p>Statut: <span style="color: green;">À jour</span></p>
+                            <button class="windows-button" style="margin-top: 5px;">Analyser</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="status-bar">
+            <span>Système sécurisé - Dernière analyse: Aujourd'hui 10:30</span>
+        </div>
+    </div>
+
+    <!-- Fenêtre: Réseau Nova -->
+    <div class="window" id="novaNetworkWindow" style="top: 100px; left: 150px; width: 500px; height: 400px;">
+        <div class="window-header">
+            <div class="window-title">
+                <i class="fas fa-network-wired"></i>
+                Réseau Nova - Infrastructure
+            </div>
+            <div class="window-controls">
+                <div class="window-control minimize" onclick="minimizeWindow('novaNetwork')">_</div>
+                <div class="window-control maximize" onclick="maximizeWindow('novaNetwork')">□</div>
+                <div class="window-control close" onclick="closeWindow('novaNetwork')">×</div>
+            </div>
+        </div>
+        <div class="window-content">
+            <h3>Réseau d'entreprise Nova</h3>
+            <div style="margin: 15px 0;">
+                <div style="border: 1px solid #808080; padding: 10px; background-color: #F5F5F5;">
+                    <h4>Serveurs actifs</h4>
+                    <ul style="margin: 10px 0; padding-left: 20px;">
+                        <li><strong>SRV-01:</strong> Serveur principal - En ligne</li>
+                        <li><strong>SRV-02:</strong> Base de données - En ligne</li>
+                        <li><strong>SRV-03:</strong> Sauvegarde - En ligne</li>
+                        <li><strong>SRV-04:</strong> Sécurité - En ligne</li>
+                    </ul>
+                </div>
+
+                <div style="margin-top: 20px; border: 1px solid #808080; padding: 10px;">
+                    <h4>Connectivité</h4>
+                    <p>État du réseau: <span style="color: green;">● Opérationnel</span></p>
+                    <p>Utilisateurs connectés: <strong>5</strong></p>
+                    <p>Bande passante utilisée: <strong>45%</strong></p>
+                </div>
+            </div>
+        </div>
+        <div class="status-bar">
+            <span>Réseau Nova - Tous les systèmes opérationnels</span>
+        </div>
+    </div>
+
+    <!-- Fenêtre: Mes documents -->
+    <div class="window" id="documentsWindow" style="top: 130px; left: 180px; width: 500px; height: 400px;">
+        <div class="window-header">
+            <div class="window-title">
+                <i class="fas fa-folder-open"></i>
+                Mes documents - NOVA SYSTÈME
+            </div>
+            <div class="window-controls">
+                <div class="window-control minimize" onclick="minimizeWindow('documents')">_</div>
+                <div class="window-control maximize" onclick="maximizeWindow('documents')">□</div>
+                <div class="window-control close" onclick="closeWindow('documents')">×</div>
+            </div>
+        </div>
+        <div class="window-content">
+            <div style="display: flex; height: 100%;">
+                <div style="width: 150px; background-color: #C0C0C0; padding: 10px 0; border-right: 2px solid #808080;">
+                    <div class="sidebar-item active" onclick="selectDocFolder(this, 'all')">
+                        <i class="fas fa-folder"></i> Tous les documents
+                    </div>
+                    <div class="sidebar-item" onclick="selectDocFolder(this, 'recent')">
+                        <i class="fas fa-clock"></i> Récents
+                    </div>
+                    <div class="sidebar-item" onclick="selectDocFolder(this, 'work')">
+                        <i class="fas fa-briefcase"></i> Travail
+                    </div>
+                    <div class="sidebar-item" onclick="selectDocFolder(this, 'personal')">
+                        <i class="fas fa-user"></i> Personnel
+                    </div>
+                </div>
+                <div style="flex-grow: 1; padding: 10px; background-color: #FFFFFF;">
+                    <div class="folder-view">
+                        <div class="file-item doc" onclick="openFile('rapport_2024.pdf')">
+                            <i class="fas fa-file-pdf"></i>
+                            <span>RAPPORT_2024.PDF</span>
+                        </div>
+                        <div class="file-item doc" onclick="openFile('budget.xlsx')">
+                            <i class="fas fa-file-excel"></i>
+                            <span>BUDGET.XLSX</span>
+                        </div>
+                        <div class="file-item folder" onclick="openFolder('projets')">
+                            <i class="fas fa-folder"></i>
+                            <span>Projets</span>
+                        </div>
+                        <div class="file-item doc" onclick="openFile('presentation.pptx')">
+                            <i class="fas fa-file-powerpoint"></i>
+                            <span>PRESENTATION.PPTX</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="status-bar">
+            <span>4 documents</span>
+        </div>
+    </div>
+
+    <!-- Fenêtre: Corbeille -->
+    <div class="window" id="corbeilleWindow" style="top: 160px; left: 220px; width: 500px; height: 400px;">
+        <div class="window-header">
+            <div class="window-title">
+                <i class="fas fa-trash-alt"></i>
+                Corbeille - NOVA SYSTÈME
+            </div>
+            <div class="window-controls">
+                <div class="window-control minimize" onclick="minimizeWindow('corbeille')">_</div>
+                <div class="window-control maximize" onclick="maximizeWindow('corbeille')">□</div>
+                <div class="window-control close" onclick="closeWindow('corbeille')">×</div>
+            </div>
+        </div>
+        <div class="window-content">
+            <div style="padding: 20px; text-align: center;">
+                <i class="fas fa-trash-alt" style="font-size: 64px; color: #808080; margin-bottom: 20px;"></i>
+                <h3>Corbeille vide</h3>
+                <p>Aucun élément dans la corbeille</p>
+                <button class="windows-button" style="margin-top: 20px;" onclick="emptyTrash()">
+                    <i class="fas fa-broom"></i> Vider la corbeille
+                </button>
+            </div>
+        </div>
+        <div class="status-bar">
+            <span>0 éléments (0 octets)</span>
+        </div>
+    </div>
+
+    <!-- Fenêtre: Snake -->
+    <div class="window" id="snakeWindow" style="top: 150px; left: 300px; width: 420px; height: 480px;">
+        <div class="window-header">
+            <div class="window-title">
+                <i class="fas fa-gamepad"></i>
+                Snake - Nova Divertissement
+            </div>
+            <div class="window-controls">
+                <div class="window-control minimize" onclick="minimizeWindow('snake')">_</div>
+                <div class="window-control maximize" onclick="maximizeWindow('snake')">□</div>
+                <div class="window-control close" onclick="closeWindow('snake')">×</div>
+            </div>
+        </div>
+        <div class="window-content"
+            style="background-color: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden;">
+            <div id="snakeScore"
+                style="color: #00FF00; font-family: 'Courier New', monospace; font-size: 20px; margin-bottom: 10px; width: 100%; text-align: center; border-bottom: 1px solid #333; padding-bottom: 5px;">
+                SCORE: 0
+            </div>
+            <canvas id="snakeCanvas" width="400" height="400"
+                style="border: 2px solid #00FF00; background-color: #000;"></canvas>
+            <div id="snakeOverlay"
+                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10; pointer-events: none;">
+                <h2 style="color: #00FF00; font-family: 'Courier New', monospace; margin-bottom: 20px;">SNAKE</h2>
+                <button class="windows-button" style="pointer-events: auto; padding: 10px 20px;"
+                    onclick="startSnake()">JOUER</button>
+                <p style="color: #FFF; margin-top: 10px; font-size: 12px;">Utilisez les flèches pour bouger</p>
+            </div>
+        </div>
+        <div class="status-bar">
+            <span id="snakeStatus">Prêt à jouer</span>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification" id="notification">
+        <div class="notification-header">
+            <i class="fas fa-info-circle"></i> Notification Nova
+        </div>
+        <div id="notificationMessage">Système Nova initialisé avec succès.</div>
+    </div>
+
+    <script>
+        // Système d'exploitation Nova
+        const NovaOS = {
+            windows: {},
+            zIndex: 100,
+            currentPath: "root/C:/",
+            clipboard: null,
+
+            // Base de données Emails
+            emails: [
+                { id: 1, folder: 'inbox', from: "Client Omega", subject: "Feedback Maquette", date: "Aujourd'hui, 09:30", body: "J'adore la nouvelle maquette, c'est exactement ce qu'on voulait ! Bravo à l'équipe.", read: false },
+                { id: 2, folder: 'inbox', from: "Léa", subject: "Note de frais", date: "Hier, 15:45", body: "Ta note de frais de Mai a été validée et envoyée à la compta.", read: true },
+                { id: 3, folder: 'inbox', from: "Alex", subject: "Stats site web", date: "14/05, 10:15", body: "Voici les stats de fréquentation de la semaine dernière. On a fait +15%.", read: true },
+                { id: 4, folder: 'inbox', from: "Imprimeur", subject: "BAT Validé", date: "13/05, 11:00", body: "Nous avons bien reçu votre validation 'Bon à Tirer'. Livraison prévue lundi prochain.", read: true },
+                { id: 5, folder: 'inbox', from: "Agence Pub", subject: "Proposition Campagne", date: "13/05, 09:20", body: "Voici 3 pistes créatives pour la campagne d'été.", read: false },
+                { id: 6, folder: 'inbox', from: "Direction", subject: "Objectifs Q3", date: "12/05, 17:00", body: "Merci de préparer une présentation des objectifs marketing pour Q3.", read: true },
+                { id: 7, folder: 'inbox', from: "Alex", subject: "Nouveau produit", date: "12/05, 14:30", body: "La fonctionnalité 'Dark Mode' est prête à être testée.", read: true },
+                { id: 8, folder: 'inbox', from: "Google Analytics", subject: "Rapport Hebdo", date: "11/05, 08:30", body: "Vos performances de la semaine dernière : +15% de trafic.", read: true },
+                { id: 9, folder: 'inbox', from: "Thomas", subject: "Aide Photoshop", date: "10/05, 16:45", body: "Désolé de te déranger, comment on fait un détourage propre ?", read: true },
+                { id: 10, folder: 'inbox', from: "Fournisseur Goodies", subject: "Retard livraison", date: "10/05, 10:15", body: "Les stylos logotés auront 2 jours de retard.", read: true },
+                { id: 11, folder: 'sent', from: "Sophie", subject: "Brief Créatif", date: "14/05, 11:00", body: "Ci-joint le brief pour la campagne d'été.", read: true },
+                { id: 12, folder: 'sent', from: "Sophie", subject: "Newsletters", date: "13/05, 15:00", body: "La newsletter de Mai est prête à être envoyée. Validation ?", read: true },
+                { id: 13, folder: 'sent', from: "Sophie", subject: "Re: Logo site", date: "12/05, 18:00", body: "Merci Alex, c'est beaucoup mieux comme ça !", read: true },
+                { id: 14, folder: 'sent', from: "Sophie", subject: "Brief Agence", date: "11/05, 11:30", body: "Voici notre besoin pour le spot radio de la rentrée.", read: true },
+                { id: 15, folder: 'sent', from: "Sophie", subject: "Planning éditorial", date: "10/05, 09:00", body: "Voici le planning des posts réseaux sociaux pour Juin.", read: true },
+                { id: 16, folder: 'trash', from: "Offre Promo", subject: "Imprimez moins cher", date: "14/05, 07:45", body: "-50% sur vos flyers...", read: true },
+                { id: 17, folder: 'inbox', from: "Imprimeur 3000", subject: "Devis Stickers", date: "Aujourd'hui, 10:45", body: "Bonjour, voici le devis pour les 1000 stickers logo Nova.", read: false },
+                { id: 18, folder: 'inbox', from: "Alex", subject: "Validation Maquettes", date: "Aujourd'hui, 09:30", body: "Les maquettes sont top, on part là-dessus pour le dev ?", read: false },
+                { id: 19, folder: 'inbox', from: "Influenceur TikTok", subject: "Collab ?", date: "Hier, 21:00", body: "Salut la team Nova, chaud pour une collab video ?", read: true },
+                { id: 20, folder: 'inbox', from: "Pinterest", subject: "Nouveaux pins pour vous", date: "Hier, 18:00", body: "Découvrez ces idées de design minimaliste.", read: true },
+                { id: 21, folder: 'inbox', from: "Léa", subject: "Pot de départ", date: "Hier, 16:30", body: "On organise un pot pour Julie vendredi à 17h.", read: true },
+                { id: 22, folder: 'inbox', from: "Direction", subject: "Logo Noël", date: "12/05, 14:00", body: "Faudra penser à la version 'Noël' du logo pour le site.", read: true },
+                { id: 23, folder: 'inbox', from: "Behance", subject: "Daily Inspiration", date: "12/05, 09:00", body: "Les meilleurs projets UX/UI du jour.", read: true },
+                { id: 24, folder: 'inbox', from: "Agence Pub", subject: "Retap point hebdo", date: "11/05, 15:00", body: "On peut décaler le point de demain à 11h ?", read: true },
+                { id: 25, folder: 'sent', from: "Sophie", subject: "Re: Retap point hebdo", date: "11/05, 15:10", body: "Pas de souci, va pour 11h.", read: true },
+                { id: 26, folder: 'inbox', from: "Thomas", subject: "Idée vidéo", date: "10/05, 11:00", body: "J'ai pensé à un truc pour le TikTok : on filme les coulisses du dev ?", read: true },
+                { id: 27, folder: 'sent', from: "Sophie", subject: "Re: Idée vidéo", date: "10/05, 11:15", body: "Excellente idée ! On en parle au déj.", read: true },
+                { id: 28, folder: 'inbox', from: "Photographe", subject: "Photos équipe", date: "09/05, 10:00", body: "Les photos retouchées du trombinoscope sont prêtes.", read: true },
+                { id: 29, folder: 'inbox', from: "Wedding Planner", subject: "Lieu réception", date: "08/05, 19:30", body: "J'ai trouvé une dispo pour le domaine le 15 juin !", read: true },
+                { id: 30, folder: 'trash', from: "Linkedin Premium", subject: "Essai gratuit", date: "13/05, 08:00", body: "1 mois offert pour booster votre carrière.", read: false },
+                { id: 31, folder: 'inbox', from: "Adobe Creative Cloud", subject: "Facture Mai", date: "05/05, 09:00", body: "Votre abonnement a été renouvelé.", read: true },
+                { id: 32, folder: 'inbox', from: "Copine Sarah", subject: "Brunch dimanche", date: "04/05, 20:00", body: "Toujours OK pour le brunch chez Marcel ?", read: true },
+                { id: 33, folder: 'inbox', from: "Agence Voyage", subject: "Billets Séminaire", date: "02/05, 14:00", body: "Voici les e-billets pour le séminaire à Lyon.", read: true },
+                { id: 34, folder: 'inbox', from: "Impots Gouv", subject: "Déclaration en ligne", date: "28/04, 08:00", body: "La campagne déclaration 2024 est ouverte.", read: true },
+                { id: 35, folder: 'inbox', from: "Newsletter Marketing", subject: "Tendances 2024", date: "25/04, 09:00", body: "L'IA générative va-t-elle remplacer les graphistes ?", read: true },
+                { id: 36, folder: 'inbox', from: "Client Omega", subject: "Bravo !", date: "20/04, 16:00", body: "J'ai vu la nouvelle pub TV, c'est canon !", read: true }
+            ],
+
+            // Système de fichiers virtuel
+            fileSystem: {
+                "root": {
+                    type: "folder",
+                    name: "root",
+                    children: {
+                        "C:": {
+                            type: "folder",
+                            name: "Disque local (C:)",
+                            children: {
+                                "Système": {
+                                    type: "folder",
+                                    name: "Système",
+                                    children: {
+                                        "logs": { type: "folder", name: "logs", children: {} },
+                                        "config.sys": { type: "file", name: "config.sys", fileType: "sys", content: "SYSTEM_VERSION=3.1\nBOOT_DRIVE=C\nMEM_CHECK=OK" }
+                                    }
+                                },
+                                "Utilisateurs": {
+                                    type: "folder",
+                                    name: "Utilisateurs",
+                                    children: {
+                                        "ADMIN": {
+                                            type: "folder",
+                                            name: "ADMIN",
+                                            children: {
+                                                "Documents": {
+                                                    type: "folder",
+                                                    name: "Documents",
+                                                    children: {
+                                                        "budget_marketing_2024.xlsx": { type: "file", name: "budget_marketing_2024.xlsx", fileType: "xls", content: "BUDGET MARKETING 2024\n\nTotal: 50 000€\n- Pub TV: 20k\n- Adwords: 10k\n- Events: 20k\n- Goodies: 5k" },
+                                                        "strategie_q3.pptx": { type: "file", name: "strategie_q3.pptx", fileType: "ppt", content: "STRATÉGIE Q3\n\n1. Focus réseaux sociaux\n2. Lancement nouveau produit\n3. Partenariats influenceurs" },
+                                                        "liste_clients_vip.txt": { type: "file", name: "liste_clients_vip.txt", fileType: "txt", content: "Omega Corp (Grand Compte)\nAlpha Industries (Relancer)\nBeta Systems (Fidèle)\nGamma Group (Nouveau)" },
+                                                        "brief_campagne_ete.doc": { type: "file", name: "brief_campagne_ete.doc", fileType: "doc", content: "BRIEF CAMPAGNE ÉTÉ\n\nCible : 18-35 ans\nMessage : 'Profitez de l'été avec Nova'\nCanaux : Instagram, TikTok" },
+                                                        "maquette_site_v3.pdf": { type: "file", name: "maquette_site_v3.pdf", fileType: "pdf", content: "MAQUETTE SITE WEB V3\n\n- Nouvelle Home Page\n- Espace Client refondu\n- Dark Mode intégré" },
+                                                        "devis_goodies.pdf": { type: "file", name: "devis_goodies.pdf", fileType: "pdf", content: "DEVIS OBJETS PUBLICITAIRES\n\n- 500 Stylos: 250€\n- 100 Tote bags: 300€\n- 1000 Stickers: 100€" },
+                                                        "Projets": {
+                                                            type: "folder",
+                                                            name: "Projets",
+                                                            children: {
+                                                                "Maquettes_V2": {
+                                                                    type: "folder",
+                                                                    name: "Maquettes_V2",
+                                                                    children: {
+                                                                        "home_draft.txt": { type: "file", name: "home_draft.txt", fileType: "txt", content: "[IMAGE PLACEHOLDER] Maquette Homepage V2" },
+                                                                        "contact_page.txt": { type: "file", name: "contact_page.txt", fileType: "txt", content: "[IMAGE PLACEHOLDER] Page Contact Clean" },
+                                                                        "logo_brouillon.png": { type: "file", name: "logo_brouillon.png", fileType: "img", content: "[BINARY IMAGE]" }
+                                                                    }
+                                                                },
+                                                                "Reseaux_Sociaux": {
+                                                                    type: "folder",
+                                                                    name: "Reseaux_Sociaux",
+                                                                    children: {
+                                                                        "calendrier_juin.xlsx": { type: "file", name: "calendrier_juin.xlsx", fileType: "xls", content: "1er Juin: Post Produit\n5 Juin: Story Team\n10 Juin: Concours" }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                "Bureau": {
+                                                    type: "folder",
+                                                    name: "Bureau",
+                                                    children: {
+                                                        "LISEZMOI.TXT": { type: "file", name: "LISEZMOI.TXT", fileType: "txt", content: "Bienvenue sur NovaOS v3.1\n\nCe système est surveillé. Toute activité suspecte sera signalée." },
+                                                        "moodboard_mariage.pdf": { type: "file", name: "moodboard_mariage.pdf", fileType: "pdf", content: "MOODBOARD MARIAGE\n\nThème: Bohème Chic\nCouleurs: Terracotta, Or, Blanc\nLieu: Domaine de la Tour" },
+                                                        "inspiration_deco.txt": { type: "file", name: "inspiration_deco.txt", fileType: "txt", content: "IDÉES DÉCO APPART\n\n- Canapé velours vert\n- Suspension rotin\n- Plantes (Monstera, Pilea)" }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
+                                "Applications": {
+                                    type: "folder",
+                                    name: "Applications",
+                                    children: {
+                                        "NovaMail.exe": { type: "file", name: "NovaMail.exe", fileType: "exe", content: "[BINARY DATA]" },
+                                        "Terminal.exe": { type: "file", name: "Terminal.exe", fileType: "exe", content: "[BINARY DATA]" }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+
+            currentUser: {
+                name: "Sophie",
+                role: "Directrice Marketing",
+                department: "Marketing",
+                lastLogin: new Date().toISOString()
+            },
+
+            init: function () {
+                this.updateDateTime();
+                setInterval(() => this.updateDateTime(), 60000);
+
+                this.setupWindowDrag();
+                this.setupWindowResize();
+                this.setupDesktop();
+                this.setupTerminal();
+
+                // Initialise l'explorateur à la racine
+                this.navigateToFolder("root/C:/Utilisateurs/ADMIN/Bureau");
+
+                // Event listener pour le bouton retour explorateur s'il existait (on va l'ajouter dynamiquement)
+                // Pour l'instant on gère juste le double clic sur dossier
+
+                // Notification de bienvenue
+                setTimeout(() => {
+                    this.showNotification(
+                        "Nova Système OS v3.1",
+                        `Bienvenue ${this.currentUser.name}. Système initialisé avec succès.`
+                    );
+                }, 1000);
+
+                // Événement pour fermer le menu Démarrer
+                document.addEventListener('click', (e) => {
+                    const startMenu = document.getElementById('startMenu');
+                    const startButton = document.querySelector('.start-button');
+
+                    if (startMenu.classList.contains('active') &&
+                        !startMenu.contains(e.target) &&
+                        !startButton.contains(e.target)) {
+                        startMenu.classList.remove('active');
+                    }
+                });
+            },
+
+            updateDateTime: function () {
+                const now = new Date();
+                const timeString = now.toLocaleTimeString('fr-FR', {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                document.getElementById('timeDate').textContent = timeString;
+            },
+
+            showNotification: function (title, message) {
+                const notification = document.getElementById('notification');
+                document.getElementById('notificationMessage').textContent = message;
+
+                notification.classList.add('active');
+                setTimeout(() => {
+                    notification.classList.remove('active');
+                }, 5000);
+            },
+
+            toggleStartMenu: function () {
+                const startMenu = document.getElementById('startMenu');
+                startMenu.classList.toggle('active');
+            },
+
+            openWindow: function (windowId) {
+                // Fermer le menu Démarrer
+                document.getElementById('startMenu').classList.remove('active');
+
+                const windowElement = document.getElementById(windowId + 'Window');
+                if (!windowElement) {
+                    console.error('Fenêtre non trouvée:', windowId);
+                    return;
+                }
+
+                // Si la fenêtre est déjà ouverte, la mettre au premier plan
+                if (this.windows[windowId]) {
+                    this.bringToFront(windowId);
+                    return;
+                }
+
+                // Ouvrir la fenêtre
+                windowElement.style.display = 'flex';
+                windowElement.style.zIndex = this.zIndex++;
+                this.windows[windowId] = true;
+
+                // Ajouter à la barre des tâches
+                this.addToTaskbar(windowId);
+
+                // Animation
+                windowElement.classList.add('active');
+
+                // Initialisation spécifique par fenêtre
+                if (windowId === 'mail') {
+                    this.renderMailList('inbox');
+                }
+            },
+
+            closeWindow: function (windowId) {
+                const windowElement = document.getElementById(windowId + 'Window');
+                if (windowElement) {
+                    windowElement.style.display = 'none';
+                    windowElement.classList.remove('active');
+                    delete this.windows[windowId];
+                    this.removeFromTaskbar(windowId);
+                }
+            },
+
+            minimizeWindow: function (windowId) {
+                const windowElement = document.getElementById(windowId + 'Window');
+                if (windowElement) {
+                    windowElement.style.display = 'none';
+                    this.updateTaskbarState(windowId, false);
+                }
+            },
+
+            maximizeWindow: function (windowId) {
+                const windowElement = document.getElementById(windowId + 'Window');
+                if (!windowElement) return;
+
+                if (windowElement.classList.contains('maximized')) {
+                    // Restaurer
+                    windowElement.classList.remove('maximized');
+                    windowElement.style.width = windowElement.dataset.originalWidth || '600px';
+                    windowElement.style.height = windowElement.dataset.originalHeight || '400px';
+                    windowElement.style.left = windowElement.dataset.originalLeft || '100px';
+                    windowElement.style.top = windowElement.dataset.originalTop || '100px';
+                } else {
+                    // Sauvegarder la taille originale
+                    windowElement.dataset.originalWidth = windowElement.style.width;
+                    windowElement.dataset.originalHeight = windowElement.style.height;
+                    windowElement.dataset.originalLeft = windowElement.style.left;
+                    windowElement.dataset.originalTop = windowElement.style.top;
+
+                    // Maximiser
+                    windowElement.classList.add('maximized');
+                    windowElement.style.width = 'calc(100vw - 10px)';
+                    windowElement.style.height = 'calc(100vh - 50px)';
+                    windowElement.style.left = '5px';
+                    windowElement.style.top = '5px';
+                }
+            },
+
+            bringToFront: function (windowId) {
+                const windowElement = document.getElementById(windowId + 'Window');
+                if (windowElement) {
+                    windowElement.style.zIndex = this.zIndex++;
+                }
+            },
+
+            addToTaskbar: function (windowId) {
+                const taskbarApps = document.getElementById('taskbarApps');
+                const windowNames = {
+                    'explorer': 'Poste de travail',
+                    'terminal': 'Console Nova',
+                    'mail': 'Messagerie',
+                    'notepad': 'Bloc-notes',
+                    'browser': 'Navigateur',
+                    'novaAdmin': 'Administration',
+                    'novaSecur': 'Sécurité',
+                    'documents': 'Documents',
+                    'novaNetwork': 'Réseau Nova',
+                    'settings': 'Configuration',
+                    'corbeille': 'Corbeille',
+                    'snake': 'Snake'
+                };
+
+                const appName = windowNames[windowId] || windowId;
+
+                // Vérifier si l'application est déjà dans la barre des tâches
+                const existingApps = Array.from(taskbarApps.children);
+                const alreadyExists = existingApps.some(app =>
+                    app.textContent.includes(appName)
+                );
+
+                if (!alreadyExists) {
+                    const appElement = document.createElement('div');
+                    appElement.className = 'taskbar-app';
+                    appElement.dataset.windowId = windowId;
+                    appElement.innerHTML = `<i class="fas fa-window-maximize"></i> ${appName}`;
+                    appElement.onclick = () => {
+                        const windowElement = document.getElementById(windowId + 'Window');
+                        if (windowElement.style.display === 'none') {
+                            windowElement.style.display = 'flex';
+                            this.updateTaskbarState(windowId, true);
+                        } else {
+                            this.bringToFront(windowId);
+                        }
+                    };
+
+                    taskbarApps.appendChild(appElement);
+                }
+
+                this.updateTaskbarState(windowId, true);
+            },
+
+            removeFromTaskbar: function (windowId) {
+                const taskbarApps = document.getElementById('taskbarApps');
+                const appToRemove = taskbarApps.querySelector(`[data-window-id="${windowId}"]`);
+                if (appToRemove) {
+                    appToRemove.remove();
+                }
+            },
+
+            updateTaskbarState: function (windowId, isActive) {
+                const taskbarApps = document.getElementById('taskbarApps');
+                const appElement = taskbarApps.querySelector(`[data-window-id="${windowId}"]`);
+
+                if (appElement) {
+                    if (isActive) {
+                        appElement.classList.add('active');
+                    } else {
+                        appElement.classList.remove('active');
+                    }
+                }
+            },
+
+            setupWindowDrag: function () {
+                let isDragging = false;
+                let currentWindow = null;
+                let offsetX = 0, offsetY = 0;
+
+                document.querySelectorAll('.window-header').forEach(header => {
+                    header.addEventListener('mousedown', (e) => {
+                        const windowElement = header.closest('.window');
+                        if (windowElement.classList.contains('maximized')) return;
+
+                        isDragging = true;
+                        currentWindow = windowElement;
+                        offsetX = e.clientX - windowElement.offsetLeft;
+                        offsetY = e.clientY - windowElement.offsetTop;
+
+                        // Mettre au premier plan
+                        currentWindow.style.zIndex = this.zIndex++;
+
+                        e.preventDefault();
+                    });
+                });
+
+                document.addEventListener('mousemove', (e) => {
+                    if (!isDragging || !currentWindow) return;
+
+                    currentWindow.style.left = (e.clientX - offsetX) + 'px';
+                    currentWindow.style.top = (e.clientY - offsetY) + 'px';
+                });
+
+                document.addEventListener('mouseup', () => {
+                    isDragging = false;
+                    currentWindow = null;
+                });
+            },
+
+            setupWindowResize: function () {
+                document.querySelectorAll('.window-resize-handle').forEach(handle => {
+                    handle.addEventListener('mousedown', (e) => {
+                        const windowElement = handle.closest('.window');
+                        let startX = e.clientX;
+                        let startY = e.clientY;
+                        let startWidth = parseInt(getComputedStyle(windowElement).width);
+                        let startHeight = parseInt(getComputedStyle(windowElement).height);
+
+                        function onMouseMove(e) {
+                            const width = startWidth + (e.clientX - startX);
+                            const height = startHeight + (e.clientY - startY);
+
+                            windowElement.style.width = Math.max(300, width) + 'px';
+                            windowElement.style.height = Math.max(200, height) + 'px';
+                        }
+
+                        function onMouseUp() {
+                            document.removeEventListener('mousemove', onMouseMove);
+                            document.removeEventListener('mouseup', onMouseUp);
+                        }
+
+                        document.addEventListener('mousemove', onMouseMove);
+                        document.addEventListener('mouseup', onMouseUp);
+
+                        e.preventDefault();
+                    });
+                });
+            },
+
+            setupDesktop: function () {
+                // Gestion de la sélection des icônes
+                document.querySelectorAll('.desktop-icon').forEach(icon => {
+                    icon.addEventListener('click', (e) => {
+                        if (e.target.closest('.desktop-icon')) {
+                            document.querySelectorAll('.desktop-icon').forEach(i => {
+                                i.classList.remove('selected');
+                            });
+                            e.currentTarget.classList.add('selected');
+                        }
+                    });
+                });
+
+                // Désélection en cliquant sur le bureau
+                document.querySelector('.desktop').addEventListener('click', (e) => {
+                    if (e.target === e.currentTarget || e.target.classList.contains('desktop-background') || e.target.classList.contains('nova-logo')) {
+                        document.querySelectorAll('.desktop-icon').forEach(i => {
+                            i.classList.remove('selected');
+                        });
+                    }
+                });
+            },
+
+            setupTerminal: function () {
+                // Curseur clignotant
+                const cursor = document.getElementById('cursor');
+                if (cursor) {
+                    setInterval(() => {
+                        cursor.style.opacity = cursor.style.opacity === '0' ? '1' : '0';
+                    }, 500);
+                }
+
+                // Commande terminal
+                document.addEventListener('keydown', (e) => {
+                    const terminalWindow = document.getElementById('terminalWindow');
+                    if (terminalWindow.style.display === 'flex' && e.key === 'Enter') {
+                        this.executeCommand();
+                    }
+                });
+            },
+
+            executeCommand: function () {
+                const terminalContent = document.getElementById('terminalContent');
+                const newLine = document.createElement('div');
+                newLine.className = 'terminal-line';
+                newLine.innerHTML = `<span class="terminal-prompt">C:\\NOVA></span> Commande exécutée`;
+                terminalContent.appendChild(newLine);
+                terminalContent.scrollTop = terminalContent.scrollHeight;
+            },
+
+            novaShutdown: function () {
+                if (confirm("Voulez-vous vraiment arrêter le système Nova ?")) {
+                    this.showNotification("Arrêt du système", "Nova Système s'arrête...");
+                    setTimeout(() => {
+                        document.body.innerHTML = `
+                            <div style="
+                                background-color: #000080;
+                                color: white;
+                                height: 100vh;
+                                display: flex;
+                                flex-direction: column;
+                                justify-content: center;
+                                align-items: center;
+                                font-family: 'MS Sans Serif', sans-serif;
+                            ">
+                                <h1 style="font-size: 48px; margin-bottom: 20px;">NOVA SYSTÈME</h1>
+                                <p style="font-size: 18px;">Il est maintenant possible d'éteindre votre ordinateur.</p>
+                                <p style="margin-top: 30px; color: #C0C0C0;">© 2024 Nova Système - Tous droits réservés</p>
+                            </div>
+                        `;
+                    }, 2000);
+                }
+            },
+
+            // Fonctions utilitaires
+            selectSidebarItem: function (element, section) {
+                document.querySelectorAll('.sidebar-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                element.classList.add('active');
+
+                // Mapping des items sidebar vers notre système de fichiers
+                const map = {
+                    'desktop': 'root/C:/Utilisateurs/ADMIN/Bureau',
+                    'documents': 'root/C:/Utilisateurs/ADMIN/Documents',
+                    'driveC': 'root/C:',
+                    'network': 'root/C:/Système', // Fake mapping
+                    'settings': 'root/C:/Système'  // Fake mapping
+                };
+
+                if (map[section]) {
+                    this.navigateToFolder(map[section]);
+                } else {
+                    this.showNotification("Info", "Emplacement non accessible");
+                }
+            },
+
+            // --- GESTION DES FICHIERS ---
+
+            // Navigation vers un dossier spécifique (chemin absolu type "root/C:/...")
+            navigateToFolder: function (path) {
+                const target = this.resolvePath(path);
+
+                if (target && target.type === "folder") {
+                    this.currentPath = path;
+                    this.renderFolderView(target);
+                    this.updateUrlBar(path);
+                } else {
+                    this.showNotification("Erreur", "Dossier introuvable ou accès refusé");
+                }
+            },
+
+            // Met à jour l'affichage des fichiers
+            renderFolderView: function (folderObj) {
+                const container = document.getElementById('folderContent');
+                container.innerHTML = ''; // Clear current view
+
+                // Bouton "Dossier Parent" si on n'est pas à la racine de C:
+                if (this.currentPath !== "root/C:") {
+                    const parentDiv = document.createElement('div');
+                    parentDiv.className = 'file-item folder';
+                    parentDiv.innerHTML = `<i class="fas fa-level-up-alt"></i><span>..</span>`;
+                    parentDiv.onclick = () => this.navigateUp();
+                    container.appendChild(parentDiv);
+                }
+
+                // Afficher les enfants
+                for (const [key, item] of Object.entries(folderObj.children)) {
+                    const el = document.createElement('div');
+                    el.className = `file-item ${item.type === 'folder' ? 'folder' : (item.fileType || 'doc')}`;
+
+                    // Icone selon le type
+                    let icon = 'fa-file';
+                    if (item.type === 'folder') icon = 'fa-folder';
+                    else if (['pdf'].includes(item.fileType)) icon = 'fa-file-pdf';
+                    else if (['doc', 'txt'].includes(item.fileType)) icon = 'fa-file-alt';
+                    else if (['xls', 'xlsx'].includes(item.fileType)) icon = 'fa-file-excel';
+                    else if (['img', 'png', 'jpg'].includes(item.fileType)) icon = 'fa-image';
+                    else if (['exe'].includes(item.fileType)) icon = 'fa-cog';
+
+                    el.innerHTML = `<i class="fas ${icon}"></i><span>${item.name}</span>`;
+
+                    // Interaction
+                    if (item.type === 'folder') {
+                        el.onclick = () => this.navigateToFolder(this.currentPath + "/" + key);
+                    } else {
+                        el.onclick = () => this.openFile(key); // Modification ici pour passer le nom du fichier
+                    }
+
+                    container.appendChild(el);
+                }
+
+                // Mettre à jour la status bar
+                const count = Object.keys(folderObj.children).length;
+                document.getElementById('statusText').textContent = `${count} éléments`;
+            },
+
+            // Remonter d'un niveau
+            navigateUp: function () {
+                const parts = this.currentPath.split('/');
+                if (parts.length > 2) { // Ne pas remonter plus haut que root/C:
+                    parts.pop();
+                    this.navigateToFolder(parts.join('/'));
+                }
+            },
+
+            // Résoudre un chemin string en objet du fileSystem
+            resolvePath: function (pathString) {
+                const parts = pathString.split('/');
+                let current = this.fileSystem;
+
+                for (let part of parts) {
+                    if (!part) continue; // skip empty
+                    if (current[part] || (current.children && current.children[part])) {
+                        current = current.children ? current.children[part] : current[part];
+                    } else {
+                        return null;
+                    }
+                }
+                return current;
+            },
+
+            // Remplacer openFolder existant par notre logique
+            openFolder: function (folderName) {
+                // Cette fonction était appelée par les favoris hardcodés
+                // On va essayer de mapper les favoris vers notre système virtuel
+                const map = {
+                    'system': 'root/C:/Système',
+                    'applications': 'root/C:/Applications',
+                    'users': 'root/C:/Utilisateurs',
+                    'documents': 'root/C:/Utilisateurs/ADMIN/Documents',
+                    'desktop': 'root/C:/Utilisateurs/ADMIN/Bureau',
+                    'driveC': 'root/C:'
+                };
+
+                if (map[folderName]) {
+                    this.navigateToFolder(map[folderName]);
+                } else {
+                    // Fallback: chercher dans le dossier courant
+                    this.navigateToFolder(this.currentPath + "/" + folderName);
+                }
+            },
+
+            // Simuler la barre d'adresse
+            updateUrlBar: function (path) {
+                // On pourrait ajouter un input text dans le header de la fenetre explorer pour montrer le chemin
+                // Pour l'instant on le log ou on le met dans le titre
+                const displayPath = path.replace('root/', '');
+                const title = document.querySelector('#explorerWindow .window-title');
+                if (title) title.innerHTML = `<i class="fas fa-folder"></i> ${displayPath}`;
+            },
+
+            openFile: function (fileName) {
+                // Trouver le fichier dans le dossier courant
+                const currentFolder = this.resolvePath(this.currentPath);
+                const file = currentFolder.children[fileName];
+
+                if (file && file.type === 'file') {
+                    this.showNotification("Explorateur", `Ouverture de "${fileName}"`);
+
+                    if (['txt', 'log', 'sys', 'bat', 'ini', 'md'].includes(file.fileType)) {
+                        // Ouvrir dans le bloc-notes
+                        document.getElementById('notepadContent').value = file.content;
+                        // Mettre le titre
+                        const cleanTitle = document.querySelector('#notepadWindow .window-title');
+                        cleanTitle.innerHTML = `<i class="fas fa-edit"></i> Bloc-notes - ${fileName}`;
+                        this.openWindow('notepad');
+                    } else if (['pdf'].includes(file.fileType)) {
+                        // Ouvrir dans un viewer PDF simulé (ici on reuse notepad en read only ou une div spécifique)
+                        // Pour faire simple et cool, on ouvre une fenetre "Aperçu"
+                        this.openDocumentViewer(fileName, file.content);
+                    } else {
+                        // Fallback
+                        document.getElementById('fileInfo').style.display = 'block';
+                        document.getElementById('fileName').textContent = fileName;
+                        document.getElementById('fileSize').textContent = "1.2 MB"; // Fake
+                        document.getElementById('fileType').textContent = file.fileType.toUpperCase();
+                        document.getElementById('fileModified').textContent = "15/05/2024";
+                    }
+                } else {
+                    this.showNotification("Erreur", "Impossible d'ouvrir le fichier.");
+                }
+            },
+
+            // Nouveau visualiseur de documents (PDF style)
+            openDocumentViewer: function (title, content) {
+                // On va utiliser le navigateur (Browser) pour afficher le PDF simulé
+                const browserContent = document.getElementById('browserContent');
+                browserContent.innerHTML = `
+                    <div style="background:#525659; padding:20px; height:100%; display:flex; justify-content:center; overflow-y: auto;">
+                        <div style="background:white; width:21cm; min-height:29.7cm; padding:2.5cm; box-shadow: 0 0 15px rgba(0,0,0,0.5); margin-bottom: 20px;">
+                            <div style="border-bottom: 1px solid #eee; padding-bottom: 20px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center;">
+                                <div style="font-weight: bold; font-size: 24px; color: #333;">NOVA OS</div>
+                                <div style="color: #888; font-size: 12px;">DOCUMENT INTERNE</div>
+                            </div>
+                            
+                            <div style="white-space: pre-wrap; font-family: 'Georgia', 'Times New Roman', serif; font-size: 12pt; line-height: 1.6; color: #222; text-align: justify;">
+${content}
+                            </div>
+
+                            <div style="margin-top: 50px; border-top: 1px solid #eee; padding-top: 10px; font-size: 10px; color: #999; text-align: center;">
+                                Document généré par Nova Système v3.1 - Confidentiel
+                            </div>
+                        </div>
+                    </div>
+                 `;
+                this.openWindow('browser');
+                // Changer le titre du browser
+                const browserTitle = document.querySelector('#browserWindow .window-title');
+                if (browserTitle) browserTitle.textContent = `Visualiseur PDF - ${title}`;
+            },
+
+            // Stub pour l'ancien système de recherche
+            searchMail: function () {
+                const searchTerm = document.getElementById('mailSearch').value;
+                if (searchTerm) {
+                    this.showNotification("Messagerie", `Recherche: "${searchTerm}"`);
+                }
+            },
+
+            selectMailFolder: function (element, folder) {
+                document.querySelectorAll('#mailWindow .sidebar-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                element.classList.add('active');
+
+                this.renderMailList(folder);
+            },
+
+            renderMailList: function (folder) {
+                const listContainer = document.getElementById('mailList');
+                listContainer.innerHTML = '';
+
+                const filtered = this.emails.filter(e => e.folder === folder);
+
+                if (filtered.length === 0) {
+                    listContainer.innerHTML = '<div style="padding:10px; color:#666;">Aucun message.</div>';
+                    return;
+                }
+
+                filtered.forEach(mail => {
+                    const el = document.createElement('div');
+                    el.className = `mail-item ${mail.read ? '' : 'unread'}`;
+                    el.innerHTML = `
+                        <div style="font-weight: bold;">${mail.from}</div>
+                        <div>${mail.subject}</div>
+                        <div style="font-size: 11px; color: #666;">${mail.date}</div>
+                    `;
+                    el.onclick = () => this.openEmail(mail.id);
+                    listContainer.appendChild(el);
+                });
+
+                // Update status bar
+                document.getElementById('mailStatus').textContent = `${filtered.length} messages dans ${folder}`;
+            },
+
+            openEmail: function (emailId) {
+                const mail = this.emails.find(e => e.id === emailId);
+                if (mail) {
+                    mail.read = true;
+
+                    // Rafraîchir la liste pour enlever le gras du status 'non lu'
+                    // Note: Idéalement on mettrait juste à jour l'élément DOM concerné
+                    const folder = mail.folder;
+                    this.renderMailList(folder);
+
+                    const preview = document.getElementById('mailPreview');
+                    preview.innerHTML = `
+                        <div style="border-bottom: 1px solid #ddd; padding-bottom: 10px; margin-bottom: 15px;">
+                            <div style="font-size: 18px; font-weight: bold; margin-bottom: 10px; color: #000080;">${mail.subject}</div>
+                            <div style="display: flex; justify-content: space-between; color: #555; font-size: 13px;">
+                                <span><strong>De:</strong> ${mail.from}</span>
+                                <span>${mail.date}</span>
+                            </div>
+                        </div>
+                        <div style="font-family: 'Arial', sans-serif; line-height: 1.6; color: #333; white-space: pre-wrap;">${mail.body}</div>
+                    `;
+                }
+            },
+
+            composeEmail: function () {
+                this.showNotification("Messagerie", "Création d'un nouveau message");
+                document.getElementById('notepadContent').value = "Nouveau message...\n\nÀ: \nObjet: \n\n";
+                this.openWindow('notepad');
+            },
+
+            browserBack: function () {
+                this.showNotification("Navigateur", "Retour");
+            },
+
+            browserForward: function () {
+                this.showNotification("Navigateur", "Avancer");
+            },
+
+            browserRefresh: function () {
+                this.showNotification("Navigateur", "Actualisation de la page");
+            },
+
+            navigateBrowser: function () {
+                const url = document.getElementById('browserUrl').value;
+                this.showNotification("Navigateur", `Chargement de ${url}`);
+            },
+
+            navigateTo: function (page) {
+                const pages = {
+                    'services': 'Services système',
+                    'database': 'Base de données',
+                    'security': 'Centre de sécurité',
+                    'reports': 'Rapports système',
+                    'users': 'Gestion utilisateurs',
+                    'backup': 'Sauvegarde'
+                };
+
+                this.showNotification("Navigateur", `Navigation vers: ${pages[page] || page}`);
+            },
+
+            selectAdminTab: function (element, tab) {
+                document.querySelectorAll('.sidebar-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                element.classList.add('active');
+
+                const adminContent = document.getElementById('adminContent');
+                const tabContents = {
+                    'users': '<h3>Gestion des utilisateurs</h3><p>Gérez les utilisateurs du système Nova.</p>',
+                    'servers': '<h3>Serveurs</h3><p>Surveillance et gestion des serveurs.</p>',
+                    'database': '<h3>Bases de données</h3><p>Administration des bases de données.</p>',
+                    'network': '<h3>Réseau</h3><p>Configuration réseau et surveillance.</p>',
+                    'security': '<h3>Sécurité</h3><p>Paramètres de sécurité avancés.</p>',
+                    'services': '<h3>Services</h3><p>Gestion des services système.</p>'
+                };
+
+                adminContent.innerHTML = tabContents[tab] || '<h3>Section non disponible</h3>';
+                this.showNotification("Administration", `Onglet "${tab}" sélectionné`);
+            },
+
+            createNewUser: function () {
+                this.showNotification("Administration", "Création d'un nouvel utilisateur");
+            },
+
+            editUser: function () {
+                this.showNotification("Administration", "Modification d'utilisateur");
+            },
+
+            deleteUser: function () {
+                if (confirm("Supprimer cet utilisateur ?")) {
+                    this.showNotification("Administration", "Utilisateur supprimé");
+                }
+            },
+
+            selectSettingsTab: function (element, tab) {
+                document.querySelectorAll('#settingsWindow .sidebar-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                element.classList.add('active');
+
+                const content = document.getElementById('settingsContent');
+                if (tab === 'system') {
+                    content.innerHTML = `
+                        <h3>Paramètres système</h3>
+                        <div style="margin: 15px 0;">
+                            <div style="margin-bottom: 10px;">
+                                <label style="display: block; margin-bottom: 5px;">Nom du système:</label>
+                                <input type="text" class="windows-input" value="NOVA-SYSTEME-01" style="width: 200px;">
+                            </div>
+                            <div style="margin-bottom: 10px;">
+                                <label style="display: block; margin-bottom: 5px;">Fuseau horaire:</label>
+                                <select class="windows-input" style="width: 200px;">
+                                    <option>Europe/Paris</option>
+                                    <option>UTC</option>
+                                    <option>America/New_York</option>
+                                </select>
+                            </div>
+                             <div style="margin-bottom: 10px;">
+                                <label style="display: block; margin-bottom: 5px;">
+                                    <input type="checkbox"> Mises à jour automatiques
+                                </label>
+                            </div>
+                            <button class="windows-button primary" onclick="saveSettings()">
+                                <i class="fas fa-save"></i> Enregistrer
+                            </button>
+                        </div>`;
+                } else if (tab === 'display') {
+                    content.innerHTML = `
+                        <h3>Affichage</h3>
+                        <p>Résolution: 1024x768</p>
+                        <p>Thème: Windows Classique</p>
+                        <button class="windows-button">Changer le fond d'écran</button>
+                    `;
+                } else if (tab === 'network') {
+                    content.innerHTML = `
+                        <h3>Réseau</h3>
+                        <p>IP: 192.168.1.105</p>
+                        <p>Masque: 255.255.255.0</p>
+                        <p>Passerelle: 192.168.1.1</p>
+                        <p>Statut: Connecté</p>
+                    `;
+                } else {
+                    content.innerHTML = `<h3>${tab.charAt(0).toUpperCase() + tab.slice(1)}</h3><p>Paramètres de la section ${tab}...</p>`;
+                }
+            },
+
+            saveSettings: function () {
+                this.showNotification("Configuration", "Paramètres enregistrés");
+            },
+
+            selectSecurityTab: function (element, tab) {
+                document.querySelectorAll('#novaSecurWindow .sidebar-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                element.classList.add('active');
+
+                const content = document.getElementById('securityContent');
+                if (tab === 'overview') {
+                    content.innerHTML = `
+                        <h3>État de la sécurité</h3>
+                        <div style="margin: 15px 0; padding: 15px; background-color: #DFF0D8; border: 1px solid #D6E9C6;">
+                            <h4 style="margin-top: 0; color: #3C763D;"><i class="fas fa-check-circle"></i> Système sécurisé</h4>
+                            <p>Tous les composants de sécurité sont actifs et à jour.</p>
+                        </div>
+                         <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 20px;">
+                            <div style="border: 1px solid #808080; padding: 10px;">
+                                <h5><i class="fas fa-fire"></i> Pare-feu</h5>
+                                <p>Statut: <span style="color: green;">Actif</span></p>
+                            </div>
+                            <div style="border: 1px solid #808080; padding: 10px;">
+                                <h5><i class="fas fa-shield-virus"></i> Antivirus</h5>
+                                <p>Statut: <span style="color: green;">À jour</span></p>
+                            </div>
+                        </div>`;
+                } else if (tab === 'firewall') {
+                    content.innerHTML = `<h3>Pare-feu</h3><p>Règles entrantes: 12</p><p>Règles sortantes: 8</p><button class="windows-button">Configurer</button>`;
+                } else if (tab === 'antivirus') {
+                    content.innerHTML = `<h3>Antivirus</h3><p>Dernier scan: Aujourd'hui 10:30</p><p>Menaces détectées: 0</p><button class="windows-button">Scan rapide</button>`;
+                } else {
+                    content.innerHTML = `<h3>${tab}</h3><p>Information non disponible.</p>`;
+                }
+            },
+
+            selectDocFolder: function (element, folder) {
+                document.querySelectorAll('.sidebar-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                element.classList.add('active');
+                this.showNotification("Documents", `Dossier "${folder}" sélectionné`);
+            },
+
+            emptyTrash: function () {
+                if (confirm("Vider la corbeille ?")) {
+                    this.showNotification("Corbeille", "Corbeille vidée");
+                }
+            }
+        };
+
+        // Jeu Snake
+        const NovaSnake = {
+            canvas: null,
+            ctx: null,
+            grid: 20,
+            count: 0,
+            snake: { x: 160, y: 160, dx: 20, dy: 0, cells: [], maxCells: 4 },
+            apple: { x: 320, y: 320 },
+            score: 0,
+            running: false,
+            interval: null,
+
+            init: function () {
+                this.canvas = document.getElementById('snakeCanvas');
+                this.ctx = this.canvas.getContext('2d');
+
+                // Contrôles
+                document.addEventListener('keydown', (e) => {
+                    // Empêcher le scroll flèches si on est dans le jeu
+                    if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key) &&
+                        document.getElementById('snakeWindow').style.display !== 'none') {
+                        e.preventDefault();
+                    }
+
+                    if (document.getElementById('snakeWindow').style.display === 'none') return;
+
+                    if (e.which === 37 && this.snake.dx === 0) { // left
+                        this.snake.dx = -this.grid;
+                        this.snake.dy = 0;
+                    } else if (e.which === 38 && this.snake.dy === 0) { // up
+                        this.snake.dy = -this.grid;
+                        this.snake.dx = 0;
+                    } else if (e.which === 39 && this.snake.dx === 0) { // right
+                        this.snake.dx = this.grid;
+                        this.snake.dy = 0;
+                    } else if (e.which === 40 && this.snake.dy === 0) { // down
+                        this.snake.dy = this.grid;
+                        this.snake.dx = 0;
+                    }
+                });
+            },
+
+            start: function () {
+                this.running = true;
+                this.score = 0;
+                this.snake = { x: 160, y: 160, dx: this.grid, dy: 0, cells: [], maxCells: 4 };
+                this.apple = { x: 320, y: 320 };
+                document.getElementById('snakeOverlay').style.display = 'none';
+                document.getElementById('snakeScore').textContent = 'SCORE: 0';
+
+                if (this.interval) cancelAnimationFrame(this.interval);
+                this.loop();
+            },
+
+            loop: function () {
+                if (!this.running) return;
+
+                this.interval = requestAnimationFrame(() => this.loop());
+
+                // Vitesse du jeu (ralentir la boucle)
+                if (++this.count < 6) return; // 60fps / 6 = 10fps
+                this.count = 0;
+
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+                // Bouger le serpent
+                this.snake.x += this.snake.dx;
+                this.snake.y += this.snake.dy;
+
+                // Wrap écran
+                if (this.snake.x < 0) this.snake.x = this.canvas.width - this.grid;
+                else if (this.snake.x >= this.canvas.width) this.snake.x = 0;
+
+                if (this.snake.y < 0) this.snake.y = this.canvas.height - this.grid;
+                else if (this.snake.y >= this.canvas.height) this.snake.y = 0;
+
+                // Garder trace position
+                this.snake.cells.unshift({ x: this.snake.x, y: this.snake.y });
+
+                // Supprimer queue
+                if (this.snake.cells.length > this.snake.maxCells) {
+                    this.snake.cells.pop();
+                }
+
+                // Dessiner pomme
+                this.ctx.fillStyle = 'red';
+                this.ctx.fillRect(this.apple.x, this.apple.y, this.grid - 1, this.grid - 1);
+
+                // Dessiner serpent
+                this.ctx.fillStyle = '#00FF00';
+                this.snake.cells.forEach((cell, index) => {
+                    this.ctx.fillRect(cell.x, cell.y, this.grid - 1, this.grid - 1);
+
+                    // Manger pomme
+                    if (cell.x === this.apple.x && cell.y === this.apple.y) {
+                        this.snake.maxCells++;
+                        this.score += 10;
+                        document.getElementById('snakeScore').textContent = 'SCORE: ' + this.score;
+
+                        this.apple.x = this.getRandomInt(0, 20) * this.grid;
+                        this.apple.y = this.getRandomInt(0, 20) * this.grid;
+                    }
+
+                    // Collision queue
+                    for (var i = index + 1; i < this.snake.cells.length; i++) {
+                        if (cell.x === this.snake.cells[i].x && cell.y === this.snake.cells[i].y) {
+                            this.gameOver();
+                        }
+                    }
+                });
+            },
+
+            gameOver: function () {
+                this.running = false;
+                cancelAnimationFrame(this.interval);
+                document.getElementById('snakeOverlay').style.display = 'flex';
+                document.querySelector('#snakeOverlay h2').textContent = "GAME OVER";
+                document.querySelector('#snakeOverlay p').textContent = `Score final: ${this.score}`;
+            },
+
+            getRandomInt: function (min, max) {
+                return Math.floor(Math.random() * (max - min)) + min;
+            }
+        };
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', () => {
+            NovaOS.init();
+
+            // Exposer les fonctions globales
+            window.openWindow = (id) => NovaOS.openWindow(id);
+            window.closeWindow = (id) => NovaOS.closeWindow(id);
+            window.minimizeWindow = (id) => NovaOS.minimizeWindow(id);
+            window.maximizeWindow = (id) => NovaOS.maximizeWindow(id);
+            window.toggleStartMenu = () => NovaOS.toggleStartMenu();
+            window.novaShutdown = () => NovaOS.novaShutdown();
+            window.openFolder = (name) => NovaOS.openFolder(name);
+            window.openFile = (name) => NovaOS.openFile(name);
+            window.createNewFolder = () => NovaOS.createNewFolder();
+            window.uploadFile = () => NovaOS.uploadFile();
+            window.openEmail = (id) => NovaOS.openEmail(id);
+            window.composeEmail = () => NovaOS.composeEmail();
+            window.navigateBrowser = () => NovaOS.navigateBrowser();
+            window.navigateTo = (page) => NovaOS.navigateTo(page);
+            window.selectSidebarItem = (element, section) => NovaOS.selectSidebarItem(element, section);
+            window.selectMailFolder = (element, folder) => NovaOS.selectMailFolder(element, folder);
+            window.searchMail = () => NovaOS.searchMail();
+            window.browserBack = () => NovaOS.browserBack();
+            window.browserForward = () => NovaOS.browserForward();
+            window.browserRefresh = () => NovaOS.browserRefresh();
+            window.selectAdminTab = (element, tab) => NovaOS.selectAdminTab(element, tab);
+            window.createNewUser = () => NovaOS.createNewUser();
+            window.editUser = () => NovaOS.editUser();
+            window.deleteUser = () => NovaOS.deleteUser();
+            window.selectSettingsTab = (element, tab) => NovaOS.selectSettingsTab(element, tab);
+            window.saveSettings = () => NovaOS.saveSettings();
+            window.selectSecurityTab = (element, tab) => NovaOS.selectSecurityTab(element, tab);
+            window.selectDocFolder = (element, folder) => NovaOS.selectDocFolder(element, folder);
+            window.emptyTrash = () => NovaOS.emptyTrash();
+
+            // Snake
+            window.startSnake = () => NovaSnake.start();
+            NovaSnake.init();
+        });
+    </script>
+    <!-- Fenêtre Glitch Webcam -->
+    <div id="staticNoise"></div>
+    <div id="glitchCamWindow">
+        <video id="glitchVideo" autoplay playsinline muted></video>
+        <div class="crt-overlay"></div>
+        <div class="cam-ui">
+            <div style="display: flex; justify-content: space-between;">
+                <div>CAM 01 - NOVA SECURITY</div>
+                <div class="cam-rec">● REC</div>
+            </div>
+            <div style="position: absolute; bottom: 20px; left: 20px;" id="camDate">18/12/2025</div>
+            <div style="position: absolute; bottom: 20px; right: 20px;" id="camTime">10:16:36</div>
+        </div>
+    </div>
+
+    <script>
+        // --- LOGIQUE GLITCH ET WEBCAM ---
+        const GlitchManager = {
+            video: null,
+            audioCtx: null,
+            stream: null,
+
+            init: function () {
+                this.video = document.getElementById('glitchVideo');
+                this.setupWebcam();
+                this.scheduleNextGlitch();
+            },
+
+            setupWebcam: function () {
+                if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                    navigator.mediaDevices.getUserMedia({ video: true })
+                        .then(stream => {
+                            this.stream = stream;
+                            this.video.srcObject = stream;
+                        })
+                        .catch(err => console.error("Webcam access denied", err));
+                }
+            },
+
+            trigger: function () {
+                const windowEl = document.getElementById('glitchCamWindow');
+                const noiseEl = document.getElementById('staticNoise');
+                document.body.classList.add('glitch-active');
+                windowEl.style.display = 'block';
+                if (noiseEl) noiseEl.style.display = 'block';
+
+                // Audio Noise
+                this.playStaticNoise(2000);
+
+                // Mise à jour date/heure cam
+                const now = new Date();
+                document.getElementById('camDate').textContent = now.toLocaleDateString();
+                document.getElementById('camTime').textContent = now.toLocaleTimeString();
+
+                setTimeout(() => {
+                    document.body.classList.remove('glitch-active');
+                    windowEl.style.display = 'none';
+                    if (noiseEl) noiseEl.style.display = 'none';
+                }, 2000);
+            },
+
+            playStaticNoise: function (duration) {
+                if (!this.audioCtx) {
+                    this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+
+                const bufferSize = this.audioCtx.sampleRate * (duration / 1000);
+                const buffer = this.audioCtx.createBuffer(1, bufferSize, this.audioCtx.sampleRate);
+                const output = buffer.getChannelData(0);
+
+                for (let i = 0; i < bufferSize; i++) {
+                    output[i] = Math.random() * 2 - 1;
+                }
+
+                const whiteNoise = this.audioCtx.createBufferSource();
+                whiteNoise.buffer = buffer;
+
+                const gainNode = this.audioCtx.createGain();
+                gainNode.gain.setValueAtTime(0.2, this.audioCtx.currentTime); // Plus fort
+                gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioCtx.currentTime + duration / 1000);
+
+                whiteNoise.connect(gainNode);
+                gainNode.connect(this.audioCtx.destination);
+                whiteNoise.start();
+            },
+
+            scheduleNextGlitch: function () {
+                // Exactement 23 secondes
+                const delay = 23000;
+                setTimeout(() => {
+                    this.trigger();
+                    this.scheduleNextGlitch();
+                }, delay);
+            }
+        };
+
+        // Lancer le manager
+        setTimeout(() => GlitchManager.init(), 2000);
+
+        // Initialisation initiale
+        document.addEventListener('DOMContentLoaded', () => {
+            NovaOS.init();
+            // ... reste de l'init ...
+        });
+    </script>
+</body>
+
+</html>
